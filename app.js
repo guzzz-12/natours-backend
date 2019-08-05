@@ -2,10 +2,16 @@ const express = require("express");
 const fs = require("fs");
 const port = 3000;
 
+//Inicializar la API
 const app = express();
 
+//Middleware
+app.use(express.json());
+
+//Data de los tours
 const tours = JSON.parse(fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`));
 
+//Tomar la data de los tours
 app.get("/api/v1/tours", (req, res) => {
   res.status(200).json({
     status: "success",
@@ -14,6 +20,23 @@ app.get("/api/v1/tours", (req, res) => {
       tours: tours
     }
   })
+});
+
+
+app.post("/api/v1/tours", (req, res) => {
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({id: newId}, req.body);
+
+  tours.push(newTour);
+
+  fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours), (err) => {
+    res.status(201).json({
+      status: "success",
+      data: {
+        tour: newTour
+      }
+    })
+  });
 });
 
 app.listen(port, () => {
