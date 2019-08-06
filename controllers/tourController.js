@@ -16,6 +16,17 @@ exports.checkId = (req, res, next, val) => {
   next();
 };
 
+//Midleware para validar la data del body de la respuesta
+exports.checkBodyData = (req, res, next) => {
+  if(!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: "fail",
+      results: "Bad request: Missing name or price"
+    });
+  }
+  next();
+};
+
 //Tomar la data de los tours
 exports.getTours = (req, res) => {
   res.status(200).json({
