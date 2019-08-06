@@ -1,11 +1,13 @@
 const express = require("express");
 const fs = require("fs");
+const morgan = require("morgan");
 const port = 3000;
 
 //Inicializar la API
 const app = express();
 
 //Middleware
+app.use(morgan("dev"));
 app.use(express.json());
 
 //Data de los tours
