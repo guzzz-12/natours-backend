@@ -15,7 +15,38 @@ mongoose.connect(db, {
 })
 .then((connection) => {
   console.log("Remote DB connection successful")
+});
+
+const toursSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "Tour must have a name"],
+    unique: true
+  },
+  rating: {
+    type: Number,
+    default: 4.5
+  },
+  price: {
+    type: Number,
+    required: [true, "Tour must have a price"]
+  }
+});
+
+const Tour = mongoose.model("Tour", toursSchema);
+
+const testTour = new Tour({
+  name: "The Park camper",
+  price: 997
+});
+
+testTour.save()
+.then((document) => {
+  console.log(document)
 })
+.catch((err) => {
+  console.log(err)
+});
 
 // //Conectar mongoose con la base de datos local
 // mongoose.connect(process.env.DATABASE_LOCAL, {
