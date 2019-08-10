@@ -1,7 +1,9 @@
 const express = require("express");
-const {getTours, getSingleTour, createTour, editTour, deleteTour} = require("../controllers/tourController");
+const {getTours, getSingleTour, createTour, editTour, deleteTour, getTourStats} = require("../controllers/tourController");
 
 const router = express.Router();
+
+router.route("/tour-stats").get(getTourStats)
 
 router.route("/")
 .get(getTours)
