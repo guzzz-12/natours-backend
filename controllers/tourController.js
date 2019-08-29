@@ -177,15 +177,15 @@ exports.getMonthlyPlan = async (req, res) => {
         }
       },
       {
-        $sort: {numberTourStarts: -1}
+        $sort: {numToursStarts: -1}
       },
       {
-        $limit: 6
+        $limit: 12
       }
     ]);
 
     res.status(200).json({
-      status: success,
+      status: "success",
       data: {
         plan: plan
       }
