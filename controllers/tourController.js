@@ -2,6 +2,17 @@ const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
 const ErrorHandler = require("../utils/errorHandler");
 
+//Función para mostrar errores de validación
+const validationErrors = (err) => {
+  const errorProperties = Object.values(err.errors)
+  let allErrors = errorProperties.map((error) => {
+    return `${error.message}.`
+  })
+  const message = `Invalid data: ${allErrors.join(" ")}`
+  return new ErrorHandler(message, 400).message
+}
+
+//------ Operaciones CRUD ------//
 //Tomar todos los tours
 exports.getTours = async (req, res) => {
   try {
@@ -77,6 +88,9 @@ exports.createTour = async (req, res) => {
         const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
         err = new ErrorHandler(message, 400).message
       }
+      if (err.name === "ValidationError") {
+        err = validationErrors(error)
+      }
     }
     res.status(400).json({
       status: "fail",
@@ -107,12 +121,7 @@ exports.editTour = async (req, res, next) => {
     let err = {...error}
     if (process.env.NODE_ENV === "production") {
       if (err.name === "ValidationError") {
-        const errorProperties = Object.values(err.errors)
-        let allErrors = errorProperties.map((error) => {
-          return `${error.message}.`
-        })
-        const message = `Invalid data: ${allErrors.join(" ")}`
-        err = new ErrorHandler(message, 400).message
+        err = validationErrors(error)
       }
     }
     res.status(404).json({
