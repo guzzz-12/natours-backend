@@ -19,6 +19,12 @@ const duplicateDataErrors = (err) => {
   return new ErrorHandler(message, 400).message
 }
 
+//Función para mostrar errores de ID no válida
+const castErrors = (err) => {
+  const newMessage = `Invalid ${err.path}: ${err.value}`
+  return new ErrorHandler(newMessage, 404).message
+}
+
 
 //------ Operaciones CRUD ------//
 //Tomar todos los tours
@@ -67,8 +73,9 @@ exports.getSingleTour = async (req, res, next) => {
   } catch (error) {
     let err = {...error}
     if (process.env.NODE_ENV === "production") {
-      const newMessage = `Invalid ${error.path}: ${error.value}`
-      err = new ErrorHandler(newMessage, 404).message
+      if(error.name === "CastError") {
+        err = castErrors(error)
+      }
     }
     res.status(404).json({
       status: "fail",
@@ -133,6 +140,10 @@ exports.editTour = async (req, res, next) => {
       if(err.code === 11000) {
         err = duplicateDataErrors(error)
       }
+
+      if(error.name === "CastError") {
+        err = castErrors(error)
+      }
     }
     res.status(404).json({
       status: "fail",
@@ -157,9 +168,17 @@ exports.deleteTour = async (req, res, next) => {
       }
     })
   } catch (error) {
+    let err = {...error}
+    
+    if (process.env.NODE_ENV === "production") {
+      if(error.name === "CastError") {
+        err = castErrors(error)
+      }
+    }
+
     res.status(404).json({
       status: "fail",
-      message: error
+      message: err
     })
   }
 };
