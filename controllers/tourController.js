@@ -70,9 +70,17 @@ exports.createTour = async (req, res) => {
       }
     })
   } catch (error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      if (err.code === 11000) {
+        const value = err.errmsg.split(":")
+        const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
+        err = new ErrorHandler(message, 400).message
+      }
+    }
     res.status(400).json({
       status: "fail",
-      message: error
+      message: err
     })
   }
 };
