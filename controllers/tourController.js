@@ -90,7 +90,7 @@ exports.editTour = async (req, res, next) => {
   try {
     const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
-      // runValidators: true
+      runValidators: true
     });
 
     if(!tour) {
@@ -104,9 +104,20 @@ exports.editTour = async (req, res, next) => {
       }
     })
   } catch (error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      if (err.name === "ValidationError") {
+        const errorProperties = Object.values(err.errors)
+        let allErrors = errorProperties.map((error) => {
+          return `${error.message}.`
+        })
+        const message = `Invalid data: ${allErrors.join(" ")}`
+        err = new ErrorHandler(message, 400).message
+      }
+    }
     res.status(404).json({
       status: "fail",
-      message: error
+      message: err
     })
   }
 };
