@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
+//Uncaught exceptions
+process.on("uncaughtException", (err) => {
+  console.log("Uncaught exception. Shutting down the application...")
+  console.log(err.message)
+  process.exit(1)
+})
+
 dotenv.config({path: "./config.env"});
+
 const app = require("./app");
 
 const port = process.env.PORT || 3000;
@@ -17,17 +26,16 @@ mongoose.connect(db, {
   console.log("Remote DB connection successful")
 });
 
-// //Conectar mongoose con la base de datos local
-// mongoose.connect(process.env.DATABASE_LOCAL, {
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useFindAndModify: false
-// })
-// .then((connection) => {
-//   console.log("Local DB connection successful")
-// })
-
 // Listener
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}`)
 });
+
+//Unhandled rejections
+process.on("unhandledRejection", (err) => {
+  console.log("Unhandled rejection. Shutting down the application...")
+  console.log(err.message)
+  server.close(() => {
+    process.exit(1)
+  })
+})
