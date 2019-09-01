@@ -12,6 +12,14 @@ const validationErrors = (err) => {
   return new ErrorHandler(message, 400).message
 }
 
+//Función para mostrar errores de data duplicada
+const duplicateDataErrors = (err) => {
+  const value = err.errmsg.split(":")
+  const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
+  return new ErrorHandler(message, 400).message
+}
+
+
 //------ Operaciones CRUD ------//
 //Tomar todos los tours
 exports.getTours = async (req, res) => {
@@ -84,9 +92,7 @@ exports.createTour = async (req, res) => {
     let err = {...error}
     if (process.env.NODE_ENV === "production") {
       if (err.code === 11000) {
-        const value = err.errmsg.split(":")
-        const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
-        err = new ErrorHandler(message, 400).message
+        err = duplicateDataErrors(error)
       }
       if (err.name === "ValidationError") {
         err = validationErrors(error)
@@ -122,6 +128,10 @@ exports.editTour = async (req, res, next) => {
     if (process.env.NODE_ENV === "production") {
       if (err.name === "ValidationError") {
         err = validationErrors(error)
+      }
+
+      if(err.code === 11000) {
+        err = duplicateDataErrors(error)
       }
     }
     res.status(404).json({
