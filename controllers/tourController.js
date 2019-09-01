@@ -46,9 +46,14 @@ exports.getSingleTour = async (req, res, next) => {
       }
     });
   } catch (error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      const newMessage = `Invalid ${error.path}: ${error.value}`
+      err = new ErrorHandler(newMessage, 404).message
+    }
     res.status(404).json({
       status: "fail",
-      message: error
+      message: err
     })
   }
 };
