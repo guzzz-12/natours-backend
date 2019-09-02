@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
+const jwt = require("jsonwebtoken");
 
 //Función para mostrar errores de validación
 const validationErrors = (err) => {
@@ -13,9 +14,22 @@ const validationErrors = (err) => {
 
 exports.signup = async (req, res) => {
   try {
-    const newUser = await User.create(req.body)
+    const newUser = await User.create({
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      passwordConfirm: req.body.passwordConfirm
+    })
+
+    const jwtSecret = process.env.JWT_SECRET;
+    const jwtExpiration = process.env.JWT_EXPIRATION
+    const token = jwt.sign({id: newUser._id}, jwtSecret, {
+      expiresIn: jwtExpiration
+    });
+
     res.status(201).json({
       status: "success",
+      token: token,
       data: {
         user: newUser
       }
