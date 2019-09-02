@@ -41,7 +41,8 @@ const userSchema = new mongoose.Schema({
       },
       message: "Passwords don't match"
     }
-  }
+  },
+  passwordChangedAt: Date
 });
 
 //Encriptar la contraseña del user
@@ -57,6 +58,16 @@ userSchema.pre("save", async function(next) {
 //Verificar si la contraseña ingresada es correcta
 userSchema.methods.correctPassword = async function(providedPassword, realPassword) {
   return await bcrypt.compare(providedPassword, realPassword);
+}
+
+//Verificar si la contraseña ha sido modificada
+userSchema.methods.changedPassword = function(timestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = parseInt(this.passwordChangedAt.getTime()/1000, 10);
+    
+    return timestamp < changedTimeStamp;
+  }
+  return false;
 }
 
 const User = mongoose.model("User", userSchema);
