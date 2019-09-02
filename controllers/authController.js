@@ -22,6 +22,18 @@ const signToken = (id) => {
   });
 }
 
+// Validar el token del usuario cuando éste intenta acceder a una ruta protegida
+const tokenError = (errName) => {
+  let newMessage = null;
+  if (errName === "JsonWebTokenError") {
+    newMessage = "Invalid token: You're not authorized to access this resource"
+  }
+  if (errName === "TokenExpiredError") {
+    newMessage = "Your session expired: Please, login again"
+  }
+  return new ErrorHandler(newMessage, 401).message
+}
+
 //Crear un nuevo usuario
 exports.signup = async (req, res) => {
   try {
@@ -29,7 +41,8 @@ exports.signup = async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
-      passwordConfirm: req.body.passwordConfirm
+      passwordConfirm: req.body.passwordConfirm,
+      passwordChangedAt: req.body.passwordChangedAt
     })
 
     const token = signToken(newUser._id);
@@ -82,6 +95,49 @@ exports.login = async (req, res, next) => {
     res.status(400).json({
       status: "fail",
       message: error
+    })
+  }
+}
+
+exports.protectRoutes = async (req, res, next) => {
+  try {
+    let token;
+    //Chequear si existe el token
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    
+    if (!token) {
+      return next(new ErrorHandler("You need to be logged in to access", 401));
+    }
+
+    //Chequear si el token es válido
+    const decodedToken = await jwt.verify(token, jwtSecret);
+    
+    //Chequear si el usuario existe
+    const currentUser = await User.findById(decodedToken.id);
+    if (!currentUser) {
+      return next(new ErrorHandler("This user no longer exist in the database", 401))
+    }
+
+    //Chequear si el usuario cambió la contraseña después de crear el token
+    if (currentUser.changedPassword(decodedToken.iat)) {
+      return next(new ErrorHandler("User changed password, please login again", 401))
+    }    
+
+    req.user = currentUser;
+    
+    //Si el usuario cumple con todos los pasos de verificación, concederle acceso al recurso solicitado
+    next()
+
+  } catch(error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      err = tokenError(error.name)
+    }
+    res.status(401).json({
+      status: "fail",
+      message: err
     })
   }
 }
