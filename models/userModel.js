@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "You must provide a password"],
+    select: false,
     validate: {
       validator: function(val) {
         return val.length >= 8
@@ -32,6 +33,7 @@ const userSchema = new mongoose.Schema({
   passwordConfirm: {
     type: String,
     required: [true, "You must confirm your password"],
+    select: false,
     validate: {
       //Sólo se valida al crear un nuevo user con save() y create()
       validator: function(val) {
@@ -51,6 +53,11 @@ userSchema.pre("save", async function(next) {
   this.passwordConfirm = null;
   next();
 });
+
+//Verificar si la contraseña ingresada es correcta
+userSchema.methods.correctPassword = async function(providedPassword, realPassword) {
+  return await bcrypt.compare(providedPassword, realPassword);
+}
 
 const User = mongoose.model("User", userSchema);
 
