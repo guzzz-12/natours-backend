@@ -63,6 +63,16 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
+//Actualizar la hora de modificación de la contraseña.
+userSchema.pre("save", function(next) {
+  if (!this.isModified("password") || this.isNew) {
+    return next()
+  }
+  //Restar 1 segundo a la hora de modificación de la contraseña para garantizar que la hora del token en resetPassword sea mayor que la hora de la modificación
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 //Verificar si la contraseña ingresada es correcta
 userSchema.methods.correctPassword = async function(providedPassword, realPassword) {
   return await bcrypt.compare(providedPassword, realPassword);
@@ -85,7 +95,6 @@ userSchema.methods.createPasswordResetToken = function() {
 
   //Encriptar el token y almacenarlo en la base de datos
   this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-  console.log({token: resetToken, tokenEncriptado: this.passwordResetToken});
 
   //Tiempo de expiración del token de 10 minutos
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
