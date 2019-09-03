@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -47,7 +48,9 @@ const userSchema = new mongoose.Schema({
       message: "Passwords don't match"
     }
   },
-  passwordChangedAt: Date
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date
 });
 
 //Encriptar la contraseña del user
@@ -73,6 +76,22 @@ userSchema.methods.changedPassword = function(timestamp) {
     return timestamp < changedTimeStamp;
   }
   return false;
+}
+
+//Generar el token para autorizar el reseteo del password del user
+userSchema.methods.createPasswordResetToken = function() {
+  //Crear el token
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  //Encriptar el token y almacenarlo en la base de datos
+  this.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  console.log({token: resetToken, tokenEncriptado: this.passwordResetToken});
+
+  //Tiempo de expiración del token de 10 minutos
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  //Retornar el token sin encriptar, éste se enviará al email el usuario
+  return resetToken;
 }
 
 const User = mongoose.model("User", userSchema);

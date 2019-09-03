@@ -1,6 +1,7 @@
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
+const emailSender = require("../utils/emailSender");
 
 //Función para mostrar errores de validación
 const validationErrors = (err) => {
@@ -150,4 +151,50 @@ exports.restrictTo = (...roles) => {
     }
     next()
   }
+}
+
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    //Tomar el usuario según su email
+    const user = await User.findOne({email: req.body.email})
+    if (!user) {
+      return next(new ErrorHandler("There's no user with the provided email address", 404))
+    }
+
+    //Generar el token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({validateBeforeSave: false})
+
+    //Enviarle el email con el token de reseteo de password
+    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`
+
+    const message = `Forgot your password? Submit a PATCH request with your password and password confirmation to ${resetUrl}`
+
+    await emailSender({
+      email: user.email,
+      subject: "Your password reset token is valid for 10 minutes",
+      message
+    });
+
+    res.status(200).json({
+      status: "success",
+      message: "Token sent"
+    });
+
+    // next()
+
+  } catch(error) {
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+    await user.save({validateBeforeSave: false});
+
+    res.status(400).json({
+      status: "fail",
+      message: new ErrorHandler("There was an error sending the email", 500).message
+    })
+  }
+}
+
+exports.resetPassword = (req, res, next) => {
+
 }
