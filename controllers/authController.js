@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
 const emailSender = require("../utils/emailSender");
+const crypto = require("crypto");
 
 //Función para mostrar errores de validación
 const validationErrors = (err) => {
@@ -195,6 +196,42 @@ exports.forgotPassword = async (req, res, next) => {
   }
 }
 
-exports.resetPassword = (req, res, next) => {
+exports.resetPassword = async (req, res, next) => {
+  try {
+    //Tomar el usuario correspondiente al token
+    const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: {$gt: Date.now()}
+    });
+
+    //Modificar el password sólo si el usuario existe y si el token es válido
+    if (!user) {
+      return next(new ErrorHandler("Invalid or expired token", 400));
+    }
+    user.password = req.body.password;
+    user.passwordConfirm = req.body.passwordConfirm;
+    user.passwordResetToken = null;
+    user.passwordResetExpires = null;
+
+    await user.save();    
+
+    //Loguear el usuario y enviar el token al cliente
+    const token = signToken(user._id);
+    res.status(200).json({
+      status: "success",
+      token: token
+    })
+
+  } catch(error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      err = validationErrors(error)
+    }
+    res.status(400).json({
+      status: "fail",
+      message: err
+    })
+  }
 
 }

@@ -21,23 +21,20 @@ const emailSender = async (options) => {
     }
   });
 
-  console.log(options)
-
   //Definir las opciones del email
   const mailOptions = {
     from: "Natours App",
     to: options.email,
     subject: options.subject,
-    text: options.message,
-    // html: 
+    text: options.message
   }
 
   //Enviar el email
   transporter.sendMail(mailOptions, (err, info) => {
     if (err) {
-      return console.log(err)
+      return console.log("Error sending emal")
     }
-    return console.log(info)
+    return console.log("Email sent successfully")
   });
 }
 
