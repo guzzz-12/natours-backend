@@ -107,7 +107,7 @@ exports.login = async (req, res, next) => {
     //Si todo es correcto, enviar el token al cliente
     const token = signToken(user._id);
 
-    createTokenCookie(token);
+    createTokenCookie(res, token);
 
     res.status(200).json({
       status: "success",
@@ -240,7 +240,7 @@ exports.resetPassword = async (req, res, next) => {
     //Loguear el usuario y enviar el token al cliente
     const token = signToken(user._id);
 
-    createTokenCookie(token);
+    createTokenCookie(res, token);
 
     res.status(200).json({
       status: "success",
@@ -278,7 +278,7 @@ exports.updatePassword = async (req, res, next) => {
     //Loguear el usuario, enviar el token
     const token = signToken(user._id);
 
-    createTokenCookie(token);
+    createTokenCookie(res, token);
 
     res.status(200).json({
       status: "success",
