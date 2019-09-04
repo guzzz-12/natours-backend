@@ -36,6 +36,15 @@ const tokenError = (errName) => {
   return new ErrorHandler(newMessage, 401).message
 }
 
+//Crear y enviar cookie con el token al cliente
+const createTokenCookie = (res, token) => {
+  res.cookie("jwt", token, {
+    secure: process.env.NODE_ENV === "production" ? true : false,
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    httpOnly: true
+  });
+}
+
 //Crear un nuevo usuario
 exports.signup = async (req, res) => {
   try {
@@ -49,6 +58,12 @@ exports.signup = async (req, res) => {
     })
 
     const token = signToken(newUser._id);
+    
+    //Enviar el cookie
+    createTokenCookie(res, token);
+
+    //Excluir el password de la respuesta al crear el usuario
+    newUser.password = null;
 
     res.status(201).json({
       status: "success",
@@ -91,6 +106,9 @@ exports.login = async (req, res, next) => {
   
     //Si todo es correcto, enviar el token al cliente
     const token = signToken(user._id);
+
+    createTokenCookie(token);
+
     res.status(200).json({
       status: "success",
       token: token
@@ -221,6 +239,9 @@ exports.resetPassword = async (req, res, next) => {
 
     //Loguear el usuario y enviar el token al cliente
     const token = signToken(user._id);
+
+    createTokenCookie(token);
+
     res.status(200).json({
       status: "success",
       token: token
@@ -256,6 +277,9 @@ exports.updatePassword = async (req, res, next) => {
 
     //Loguear el usuario, enviar el token
     const token = signToken(user._id);
+
+    createTokenCookie(token);
+
     res.status(200).json({
       status: "success",
       token: token
