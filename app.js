@@ -5,11 +5,15 @@ const userRouter = require("./routes/userRoutes");
 const ErrorHandler = require("./utils/errorHandler");
 const errorController = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 //Inicializar la API
 const app = express();
 
-//Middlewares globales:
+// ------- Middlewares globales -------- //
+
+//Middleware para crear headers HTTP seguros
+app.use(helmet());
 
 //Middleware para loguear en consola en ambiente de desarrollo
 if(process.env.NODE_ENV === "development") {
@@ -24,27 +28,12 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
+
 //Middlewarepara parsear la data del body
 app.use(express.json());
 
 //Middleware para leer archivos estáticos
 app.use(express.static(`${__dirname}/public`));
-
-// //Tomar la data de los tours
-// app.get("/api/v1/tours", getTours);
-
-// //Tomar un tour según el parámetro id de la URL
-// app.get("/api/v1/tours/:id", getSingleTour);
-
-// //Crear un nuevo tour
-// app.post("/api/v1/tours", createTour);
-
-// //Editar la data de un tour según la ID especificada en la URL
-// app.patch("/api/v1/tours/:id", editTour);
-
-// //Borrar un tour
-// app.delete("/api/v1/tours/:id", deleteTour);
-
 
 //Middleware de las Rutas
 app.use("/api/v1/tours", tourRouter);
