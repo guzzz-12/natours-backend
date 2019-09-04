@@ -45,7 +45,7 @@ exports.signup = async (req, res) => {
       role: req.body.role,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
-      passwordChangedAt: req.body.passwordChangedAt
+      passwordChangedAt: Date.now()
     })
 
     const token = signToken(newUser._id);
@@ -102,6 +102,7 @@ exports.login = async (req, res, next) => {
   }
 }
 
+//Permitir el acceso a un recurso sólo cuando el usuario está autenticado
 exports.protectRoutes = async (req, res, next) => {
   try {
     let token;
@@ -145,6 +146,7 @@ exports.protectRoutes = async (req, res, next) => {
   }
 }
 
+//Permitir el acceso sólo a usuarios que cumplan con el rol especificado
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
     if(!roles.includes(req.user.role)) {
@@ -154,6 +156,7 @@ exports.restrictTo = (...roles) => {
   }
 }
 
+//Enviar correo de confirmación de restablecimiento de contraseña en caso de que el usuario lo solicite por olvido de su contraseña actual
 exports.forgotPassword = async (req, res, next) => {
   try {
     //Tomar el usuario según su email
@@ -182,8 +185,6 @@ exports.forgotPassword = async (req, res, next) => {
       message: "Token sent"
     });
 
-    // next()
-
   } catch(error) {
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
@@ -196,9 +197,10 @@ exports.forgotPassword = async (req, res, next) => {
   }
 }
 
+//Utilizar la data del correo de confirmación enviado para proceder a crear una nueva contraseña
 exports.resetPassword = async (req, res, next) => {
   try {
-    //Tomar el usuario correspondiente al token
+    //Tomar el usuario correspondiente al token y verificar que el token no haya expirado
     const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
     const user = await User.findOne({
       passwordResetToken: hashedToken,
@@ -233,10 +235,9 @@ exports.resetPassword = async (req, res, next) => {
       message: err
     })
   }
-
 }
 
-//Actualizar la contraseña del usuario
+//Actualizar la contraseña en caso de que el usuario desee modificarla
 exports.updatePassword = async (req, res, next) => {
   try {
     //Tomar el usuario actual
