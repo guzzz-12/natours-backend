@@ -57,6 +57,7 @@ exports.signup = async (req, res) => {
         user: newUser
       }
     })
+    
   } catch(error) {
     let err = {...error}
     if (process.env.NODE_ENV === "production") {

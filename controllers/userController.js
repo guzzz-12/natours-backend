@@ -84,6 +84,22 @@ exports.updateMe = async (req, res, next) => {
 
 }
 
+//Desactivar la cuenta del usuario
+exports.deleteMe = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, {active: false});
+    res.status(204).json({
+      status: success,
+      data: null
+    })
+  } catch(error) {
+    res.status(400).json({
+      status: "fail",
+      message: error
+    })
+  }
+}
+
 //Crear usuario
 exports.createUser = (req, res) => {
   res.status(500).json({
