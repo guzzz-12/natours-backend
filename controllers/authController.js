@@ -235,3 +235,38 @@ exports.resetPassword = async (req, res, next) => {
   }
 
 }
+
+//Actualizar la contraseña del usuario
+exports.updatePassword = async (req, res, next) => {
+  try {
+    //Tomar el usuario actual
+    const user = await User.findById(req.user.id).select("+password");
+  
+    //Chequear si la contraseña es correcta
+    if (!(await user.correctPassword(req.body.currentPassword, user.password))) {
+      return next(new ErrorHandler("Wrong password", 401))
+    }
+  
+    //Si la contraseña es correcta, actualizarla
+    user.password = req.body.newPassword;
+    user.passwordConfirm = req.body.passwordConfirm;
+    await user.save();
+
+    //Loguear el usuario, enviar el token
+    const token = signToken(user._id);
+    res.status(200).json({
+      status: "success",
+      token: token
+    })
+
+  } catch(error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      err = validationErrors(error)
+    }
+    res.status(400).json({
+      status: "fail",
+      message: err
+    })
+  }
+}
