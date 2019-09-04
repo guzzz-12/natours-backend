@@ -6,6 +6,8 @@ const ErrorHandler = require("./utils/errorHandler");
 const errorController = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 //Inicializar la API
 const app = express();
@@ -28,9 +30,14 @@ const limiter = rateLimit({
 });
 app.use("/api", limiter);
 
-
 //Middlewarepara parsear la data del body
 app.use(express.json());
+
+//Limpieza de data contra ataques NoSQL Query Injection
+app.use(mongoSanitize());
+
+//Limpieza de data contra ataques XSS
+app.use(xss());
 
 //Middleware para leer archivos estáticos
 app.use(express.static(`${__dirname}/public`));
