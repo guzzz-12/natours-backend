@@ -50,7 +50,12 @@ const userSchema = new mongoose.Schema({
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
-  passwordResetExpires: Date
+  passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false
+  }
 });
 
 //Encriptar la contraseña del user
@@ -70,6 +75,12 @@ userSchema.pre("save", function(next) {
   }
   //Restar 1 segundo a la hora de modificación de la contraseña para garantizar que la hora del token en resetPassword sea mayor que la hora de la modificación
   this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
+//Filtrar los usuarios inactivos en todos los queries de búsqueda (find)
+userSchema.pre(/^find/, function(next) {
+  this.find({active: true});
   next();
 });
 
