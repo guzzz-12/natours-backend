@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 const validator = require("validator");
+// const User = require("./userModel");
 
 const toursSchema = new mongoose.Schema({
   name: {
@@ -99,6 +100,12 @@ const toursSchema = new mongoose.Schema({
       description: String,
       day: Number
     }
+  ],
+  guides: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User"
+    }
   ]
 }, {
   toJSON: {virtuals: true},
@@ -115,27 +122,36 @@ toursSchema.pre("save", function(next) {
   next();
 });
 
-// toursSchema.pre("save", function(next) {
-//   console.log("Will save the document");
-//   next();
-// })
-
-// toursSchema.post("save", function(doc, next) {
-//   console.log(doc);
-//   next();
+// //Asignar los guías (guides) de los tours
+// toursSchema.pre("save", async function(next) {
+//   const guidesPromises = this.guides.map(async guideId => {
+//     return await User.findById(guideId)
+//   })
+//   this.guides = await Promise.all(guidesPromises)
+//   next()
 // })
 
 
 //Query Middleware
-// toursSchema.pre("find", function(next) {
+//Retornar sólo los tours que no sean secretos
 toursSchema.pre(/^find/, function(next) {
   this.find({secretTour: {$ne: true}})
   this.start = Date.now()
   next()
 })
 
+//Loguear el tiempo que tomó en realizarse el query
 toursSchema.post(/^find/, function(docs, next) {
   console.log(`Query took ${Date.now() - this.start} milliseconds`)
+  next()
+})
+
+//Llenar el campo guides con la información de los guías de los tours referenciándolos mediante su ID
+toursSchema.pre(/^find/, function(next) {
+  this.populate({
+    path: "guides",
+    select: "-__v -passwordChangedAt"
+  });
   next()
 })
 
