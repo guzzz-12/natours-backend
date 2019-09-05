@@ -17,7 +17,7 @@ mongoose.connect(db, {
 });
 
 //Leer el archivo json
-const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours-simple.json`, "utf-8"));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, "utf-8"));
 
 //Importar la data en la base de datos
 const importData = async () => {
