@@ -112,25 +112,23 @@ const toursSchema = new mongoose.Schema({
   toObject: {virtuals: true},
 });
 
+//Propiedad virtual para mostrar la duración del tour en semanas
 toursSchema.virtual("durationWeeks").get(function() {
   return `${(this.duration/7).toFixed(2)} weeks`
 });
+
+//Tomar los reviews correspondientes a un tour desde el reviewModel y almacenarlos en la propiedad virtual "reviews" en los tours
+toursSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour",
+  localField: "_id"
+})
 
 //Document Middleware: se ejecuta antes de .save() y .create()
 toursSchema.pre("save", function(next) {
   this.slug = slugify(this.name, {lower: true});
   next();
 });
-
-// //Asignar los guías (guides) de los tours
-// toursSchema.pre("save", async function(next) {
-//   const guidesPromises = this.guides.map(async guideId => {
-//     return await User.findById(guideId)
-//   })
-//   this.guides = await Promise.all(guidesPromises)
-//   next()
-// })
-
 
 //Query Middleware
 //Retornar sólo los tours que no sean secretos
