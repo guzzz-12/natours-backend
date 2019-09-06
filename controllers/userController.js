@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
+const factory = require("./handlerFactory");
+
 
 //Mostrar errores de validación
 const validationErrors = (err) => {
@@ -117,9 +119,4 @@ exports.updateUser = (req, res) => {
 };
 
 //Borrar usuario
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  })
-};
+exports.deleteUser = factory.deleteOne(User);

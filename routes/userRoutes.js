@@ -1,6 +1,6 @@
 const express = require("express");
 const {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe} = require("../controllers/userController");
-const {signup, login, forgotPassword, resetPassword, protectRoutes, updatePassword} = require("../controllers/authController")
+const {signup, login, forgotPassword, resetPassword, protectRoutes, restrictTo, updatePassword} = require("../controllers/authController")
 
 const router = express.Router();
 
@@ -20,6 +20,6 @@ router.route("/")
 router.route("/:id")
 .get(getUser)
 .patch(updateUser)
-.delete(deleteUser);
+.delete(protectRoutes, restrictTo("admin"), deleteUser);
 
 module.exports = router;
