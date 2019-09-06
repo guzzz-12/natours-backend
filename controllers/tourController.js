@@ -1,6 +1,7 @@
 const Tour = require("../models/tourModel");
 const APIFeatures = require("../utils/apiFeatures");
 const ErrorHandler = require("../utils/errorHandler");
+const factory = require("./handlerFactory");
 
 //Función para mostrar errores de validación
 const validationErrors = (err) => {
@@ -153,35 +154,7 @@ exports.editTour = async (req, res, next) => {
 };
 
 //Borrar tour
-exports.deleteTour = async (req, res, next) => {
-  try {
-    const tour = await Tour.findByIdAndDelete(req.params.id);
-
-    if(!tour) {
-      return next(new ErrorHandler("No tour found for that ID", 404))
-    }
-
-    res.status(204).json({
-      status: "success",
-      data: {
-        tour: null
-      }
-    })
-  } catch (error) {
-    let err = {...error}
-    
-    if (process.env.NODE_ENV === "production") {
-      if(error.name === "CastError") {
-        err = castErrors(error)
-      }
-    }
-
-    res.status(404).json({
-      status: "fail",
-      message: err
-    })
-  }
-};
+exports.deleteTour = factory.deleteOne(Tour);
 
 //Calcular y agrupar las estadísticas de los tours
 exports.getTourStats = async (req, res) => {
