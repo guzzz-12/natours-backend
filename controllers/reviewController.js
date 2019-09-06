@@ -1,4 +1,5 @@
 const Review = require("../models/reviewModel");
+const factory = require("./handlerFactory");
 
 //Tomar todos los reviews
 exports.getReviews = async (req, res, next) => {
@@ -51,3 +52,6 @@ exports.createReview = async (req, res, next) => {
     })
   }
 }
+
+//Borrar review
+exports.deleteReview = factory.deleteOne(Review);
