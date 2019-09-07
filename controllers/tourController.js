@@ -86,32 +86,7 @@ exports.getSingleTour = async (req, res, next) => {
 };
 
 //Crear tour
-exports.createTour = async (req, res) => {
-  try {
-    const newTour = await Tour.create(req.body);
-  
-    res.status(201).json({
-      status: "success",
-      data: {
-        tour: newTour
-      }
-    })
-  } catch (error) {
-    let err = {...error}
-    if (process.env.NODE_ENV === "production") {
-      if (err.code === 11000) {
-        err = duplicateDataErrors(error)
-      }
-      if (err.name === "ValidationError") {
-        err = validationErrors(error)
-      }
-    }
-    res.status(400).json({
-      status: "fail",
-      message: err
-    })
-  }
-};
+exports.createTour = factory.createOne(Tour);
 
 //Editar tour
 exports.editTour = factory.updateOne(Tour);

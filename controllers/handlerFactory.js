@@ -100,3 +100,44 @@ exports.updateOne = (Model) => {
     }
   }
 }
+
+//Crear un documento
+exports.createOne = (Model) => {
+  return async (req, res) => {
+    //Si se va a crear un review tomando la ID desde los parámetros dela URL, hacer:
+    if (Model.modelName === "Review") {
+      if (!req.body.tour) {
+        req.body.tour = req.params.tourId;
+      }
+      if (!req.body.author) {
+        req.body.author = req.user.id
+      }
+    }
+
+    try {
+      const newDoc = await Model.create(req.body);
+    
+      res.status(201).json({
+        status: "success",
+        data: {
+          data: newDoc
+        }
+      })
+
+    } catch (error) {
+      let err = {...error}
+      if (process.env.NODE_ENV === "production") {
+        if (err.code === 11000) {
+          err = duplicateDataErrors(error)
+        }
+        if (err.name === "ValidationError") {
+          err = validationErrors(error)
+        }
+      }
+      res.status(400).json({
+        status: "fail",
+        message: err
+      })
+    }
+  }
+}
