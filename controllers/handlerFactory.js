@@ -141,3 +141,41 @@ exports.createOne = (Model) => {
     }
   }
 }
+
+//Leer la información de un documento
+exports.getOne = (Model, populateOptions) => {
+  return async (req, res, next) => {
+    try {
+      let query = Model.findById(req.params.id);
+
+      //Chequear si el documento solicitado requiere ejecutar populate()
+      if (populateOptions) {
+        query = query.populate(populateOptions);
+      }
+
+      const document = await query;
+  
+      if(!document) {
+        return next(new ErrorHandler("No document found for that ID", 404))
+      }
+  
+      res.status(200).json({
+        status: "success",
+        data: {
+          data: document
+        }
+      });
+    } catch (error) {
+      let err = {...error}
+      if (process.env.NODE_ENV === "production") {
+        if(error.name === "CastError") {
+          err = castErrors(error)
+        }
+      }
+      res.status(404).json({
+        status: "fail",
+        message: err
+      })
+    }
+  }
+}
