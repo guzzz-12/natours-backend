@@ -14,16 +14,11 @@ const validationErrors = (err) => {
 }
 
 
-//Tomar la data de todos los usarios
-exports.getAllUsers = factory.getAll(User);
-
-//Leer la información de un usuario
-exports.getUser = factory.getOne(User);
 
 //Actualizar la información del usuario
 exports.updateMe = async (req, res, next) => {
   try {
-
+    
     //Campos permitidos
     const allowedData = ["name", "email"];
     
@@ -34,16 +29,16 @@ exports.updateMe = async (req, res, next) => {
         return next(new ErrorHandler("This route is only for Name and Email updates", 400))
       }
     })
-
+    
     //Crear el objeto con los datos a actualizar
     let dataToUpdate = {}
     for(let key of requestKeys) {
       dataToUpdate[key] = req.body[key]
     }
-  
+    
     // Actualizar los datos del usuario
     const user = await User.findByIdAndUpdate(req.user.id, dataToUpdate, {new: true, runValidators: true});
-
+    
     res.status(200).json({
       status: "success",
       message: "User data successfully updated",
@@ -51,7 +46,7 @@ exports.updateMe = async (req, res, next) => {
         user
       }
     })
-
+    
   } catch(error) {
     let err = {...error}
     if (process.env.NODE_ENV === "production" && err.name === "ValidationError") {
@@ -62,7 +57,7 @@ exports.updateMe = async (req, res, next) => {
       message: err
     })
   }
-
+  
 }
 
 //Desactivar la cuenta del usuario
@@ -88,6 +83,18 @@ exports.createUser = (req, res) => {
     message: "This route is not yet defined"
   })
 };
+
+//Tomar la data de todos los usarios
+exports.getAllUsers = factory.getAll(User);
+
+//Middleware para pasar la ID del usuario actual en los parámetros del request
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next()
+}
+
+//Leer la información de un usuario
+exports.getUser = factory.getOne(User);
 
 //Actualizar usuario
 exports.updateUser = factory.updateOne(User);
