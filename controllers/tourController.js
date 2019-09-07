@@ -114,44 +114,7 @@ exports.createTour = async (req, res) => {
 };
 
 //Editar tour
-exports.editTour = async (req, res, next) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
-
-    if(!tour) {
-      return next(new ErrorHandler("No tour found for that ID", 404))
-    }
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        tour: tour
-      }
-    })
-  } catch (error) {
-    let err = {...error}
-    if (process.env.NODE_ENV === "production") {
-      if (err.name === "ValidationError") {
-        err = validationErrors(error)
-      }
-
-      if(err.code === 11000) {
-        err = duplicateDataErrors(error)
-      }
-
-      if(error.name === "CastError") {
-        err = castErrors(error)
-      }
-    }
-    res.status(404).json({
-      status: "fail",
-      message: err
-    })
-  }
-};
+exports.editTour = factory.updateOne(Tour);
 
 //Borrar tour
 exports.deleteTour = factory.deleteOne(Tour);

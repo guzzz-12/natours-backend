@@ -53,5 +53,8 @@ exports.createReview = async (req, res, next) => {
   }
 }
 
+//Actualizar review
+exports.editReview = factory.updateOne(Review);
+
 //Borrar review
 exports.deleteReview = factory.deleteOne(Review);
