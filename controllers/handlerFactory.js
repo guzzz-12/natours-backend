@@ -1,4 +1,5 @@
 const ErrorHandler = require("../utils/errorHandler");
+const APIFeatures = require("../utils/apiFeatures");
 
 //Función para mostrar errores de validación
 const validationErrors = (err) => {
@@ -175,6 +176,42 @@ exports.getOne = (Model, populateOptions) => {
       res.status(404).json({
         status: "fail",
         message: err
+      })
+    }
+  }
+}
+
+//Leer la data de todos los documentos de una colección
+exports.getAll = (Model) => {  
+  return async (req, res, next) => {
+    try {
+      //Filtrar los tours por la ID especificada en la URL
+      let filter = {}
+      if (req.params.tourId) {
+        filter = {tour: req.params.tourId}
+      }
+
+      //Ejecutar el query para filtrar, ordenar, limitar y paginar los documentos
+      const features = new APIFeatures(Model.find(filter), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
+
+      const documents = await features.query;
+  
+      res.status(200).json({
+        status: "success",
+        results: documents.length,
+        data: {
+          data: documents
+        }
+      })
+
+    } catch (error) {
+      res.status(404).json({
+        status: "fail",
+        message: error
       })
     }
   }
