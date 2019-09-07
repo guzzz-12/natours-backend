@@ -5,12 +5,12 @@ const {protectRoutes, restrictTo} = require("../controllers/authController")
 const router = express.Router({mergeParams: true});
 
 router.route("/")
-.get(getReviews)
+.get(protectRoutes, getReviews)
 .post(protectRoutes, restrictTo("user"), createReview)
 
 router.route("/:id")
-.get(getSingleReview)
-.delete(protectRoutes, restrictTo("admin"), deleteReview)
-.patch(protectRoutes, editReview)
+.get(protectRoutes, getSingleReview)
+.delete(protectRoutes, restrictTo("user", "admin"), deleteReview)
+.patch(protectRoutes, restrictTo("user", "admin"), editReview)
 
 module.exports = router;
