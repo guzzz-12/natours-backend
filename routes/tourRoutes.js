@@ -8,15 +8,16 @@ const router = express.Router();
 router.use("/:tourId/reviews", reviewRouter);
 
 router.route("/tour-stats").get(getTourStats);
-router.route("/monthly-plan/:year").get(getMonthlyPlan);
+router.route("/monthly-plan/:year")
+.get(protectRoutes, restrictTo("admin", "lead-guide", "guide"), getMonthlyPlan);
 
 router.route("/")
-.get(protectRoutes, getTours)
-.post(createTour);
+.get(getTours)
+.post(protectRoutes, restrictTo("admin", "lead-guide"), createTour);
 
 router.route("/:id")
 .get(getSingleTour)
-.patch(editTour)
+.patch(protectRoutes, restrictTo("admin", "lead-guide"), editTour)
 .delete(protectRoutes, restrictTo("admin", "lead-guide"), deleteTour);
 
 module.exports = router;
