@@ -26,6 +26,9 @@ exports.getReviews = async (req, res, next) => {
   }
 }
 
+//Leer la información de un review
+exports.getSingleReview = factory.getOne(Review);
+
 //Crear review
 exports.createReview = factory.createOne(Review);
 
