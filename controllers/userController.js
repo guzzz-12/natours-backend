@@ -15,24 +15,7 @@ const validationErrors = (err) => {
 
 
 //Tomar la data de todos los usarios
-exports.getAllUsers = async (req, res, next) => {
-  try {    
-    const users = await User.find();
-
-    res.status(200).json({
-      status: "success",
-      results: users.length,
-      data: {
-        users: users
-      }
-    })
-  } catch (error) {
-    res.status(404).json({
-      status: "fail",
-      message: error
-    })
-  }
-};
+exports.getAllUsers = factory.getAll(User);
 
 //Leer la información de un usuario
 exports.getUser = factory.getOne(User);

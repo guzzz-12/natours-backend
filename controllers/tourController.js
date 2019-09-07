@@ -1,59 +1,11 @@
 const Tour = require("../models/tourModel");
-const APIFeatures = require("../utils/apiFeatures");
 const ErrorHandler = require("../utils/errorHandler");
 const factory = require("./handlerFactory");
 
-//Función para mostrar errores de validación
-const validationErrors = (err) => {
-  const errorProperties = Object.values(err.errors)
-  let allErrors = errorProperties.map((error) => {
-    return `${error.message}.`
-  })
-  const message = `Invalid data: ${allErrors.join(" ")}`
-  return new ErrorHandler(message, 400).message
-}
-
-//Función para mostrar errores de data duplicada
-const duplicateDataErrors = (err) => {
-  const value = err.errmsg.split(":")
-  const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
-  return new ErrorHandler(message, 400).message
-}
-
-//Función para mostrar errores de ID no válida
-const castErrors = (err) => {
-  const newMessage = `Invalid ${err.path}: ${err.value}`
-  return new ErrorHandler(newMessage, 404).message
-}
-
 
 //------ Operaciones CRUD ------//
-//Tomar todos los tours
-exports.getTours = async (req, res) => {
-  try {
-    //Ejecutar el query
-    const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-
-    const tours = await features.query;
-
-    res.status(200).json({
-      status: "success",
-      results: tours.length,
-      data: {
-        tours: tours
-      }
-    })
-  } catch (error) {
-    res.status(404).json({
-      status: "fail",
-      message: error
-    })
-  }
-};
+//Leer todos los tours
+exports.getTours = factory.getAll(Tour);
 
 //Leer la información de un tour
 exports.getSingleTour = factory.getOne(Tour, "reviews");

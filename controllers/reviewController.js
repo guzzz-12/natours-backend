@@ -1,30 +1,8 @@
 const Review = require("../models/reviewModel");
 const factory = require("./handlerFactory");
 
-//Tomar todos los reviews
-exports.getReviews = async (req, res, next) => {
-  try {
-    let filter = {}
-    if (req.params.tourId) {
-      filter = {tour: req.params.tourId}
-    }
-    const reviews = await Review.find(filter);
-
-    res.status(200).json({
-      status: "success",
-      results: reviews.length,
-      data: {
-        reviews
-      }
-    })
-
-  } catch(error) {
-    res.status(404).json({
-      status: "fail",
-      message: error
-    })
-  }
-}
+//Leer todos los reviews
+exports.getReviews = factory.getAll(Review);
 
 //Leer la información de un review
 exports.getSingleReview = factory.getOne(Review);
