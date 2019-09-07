@@ -55,35 +55,8 @@ exports.getTours = async (req, res) => {
   }
 };
 
-//Tomar un tour por su ID
-exports.getSingleTour = async (req, res, next) => {
-  try {
-    // const tour = await Tour.findOne({_id: req.params.id});
-    const tour = await Tour.findById(req.params.id).populate("reviews");
-
-    if(!tour) {
-      return next(new ErrorHandler("No tour found for that ID", 404))
-    }
-
-    res.status(200).json({
-      status: "success",
-      data: {
-        tour: tour
-      }
-    });
-  } catch (error) {
-    let err = {...error}
-    if (process.env.NODE_ENV === "production") {
-      if(error.name === "CastError") {
-        err = castErrors(error)
-      }
-    }
-    res.status(404).json({
-      status: "fail",
-      message: err
-    })
-  }
-};
+//Leer la información de un tour
+exports.getSingleTour = factory.getOne(Tour, "reviews");
 
 //Crear tour
 exports.createTour = factory.createOne(Tour);

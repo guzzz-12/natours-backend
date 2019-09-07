@@ -34,12 +34,8 @@ exports.getAllUsers = async (req, res, next) => {
   }
 };
 
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not yet defined"
-  })
-};
+//Leer la información de un usuario
+exports.getUser = factory.getOne(User);
 
 //Actualizar la información del usuario
 exports.updateMe = async (req, res, next) => {
