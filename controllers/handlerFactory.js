@@ -147,7 +147,7 @@ exports.createOne = (Model) => {
 exports.getOne = (Model, populateOptions) => {
   return async (req, res, next) => {
     try {
-      let query = Model.findById(req.params.id);
+      let query = Model.findById(req.params.id || req.user.id);
 
       //Chequear si el documento solicitado requiere ejecutar populate()
       if (populateOptions) {

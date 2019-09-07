@@ -87,12 +87,6 @@ exports.createUser = (req, res) => {
 //Tomar la data de todos los usarios
 exports.getAllUsers = factory.getAll(User);
 
-//Middleware para pasar la ID del usuario actual en los parámetros del request
-exports.getMe = (req, res, next) => {
-  req.params.id = req.user.id;
-  next()
-}
-
 //Leer la información de un usuario
 exports.getUser = factory.getOne(User);
 
