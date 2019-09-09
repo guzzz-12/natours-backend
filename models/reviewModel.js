@@ -30,6 +30,9 @@ const reviewSchema = new mongoose.Schema({
   toObject: {virtuals: true},
 });
 
+//Evitar que el mismo usuario publique múltiples reviews para el mismo tour
+reviewSchema.index({tour: 1, user: 1}, {unique: true});
+
 //Agregar la información del tour y del autor del review correspondientes a sus ID
 reviewSchema.pre(/^find/, function(next) {
   this.populate({
