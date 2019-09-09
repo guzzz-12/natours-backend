@@ -116,6 +116,7 @@ const toursSchema = new mongoose.Schema({
 //Índices
 toursSchema.index({price: 1, ratingsAverage: -1});
 toursSchema.index({slug: 1});
+toursSchema.index({startLocation: "2dsphere"});
 
 //Propiedad virtual para mostrar la duración del tour en semanas
 toursSchema.virtual("durationWeeks").get(function() {

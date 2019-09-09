@@ -108,3 +108,38 @@ exports.getMonthlyPlan = async (req, res) => {
     })
   }
 }
+
+//Obtener los tours cuya ubicación (startLocation) se encuentre dentro de la distancia determinada en los parámetros de la URL
+exports.getToursWithin = async (req, res, next) => {
+  try {
+    const {distance, latlon, unit} = req.params;
+    const [lat, lon] = latlon.split(",");
+
+    //Convertir la distancia a radianes
+    const radius = unit === "mi" ? distance/3963.2 : distance/6378.1;
+  
+    if (!lat || !lon) {
+      next(new ErrorHandler("Please provide latitude and longitude in the format lat,lon", 400));
+    }
+  
+    const tours = await Tour.find({
+      startLocation: {
+        $geoWithin: {$centerSphere: [[lon, lat], radius]}
+      }
+    });
+  
+    res.status(200).json({
+      status: "success",
+      results: tours.length,
+      data: {
+        data: tours
+      }
+    });
+
+  } catch(error) {
+    res.status(400).json({
+      status: "fail",
+      message: error
+    })
+  }
+}
