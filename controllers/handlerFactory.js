@@ -36,6 +36,11 @@ exports.deleteOne = (Model) => {
       if(!doc) {
         return next(new ErrorHandler("No document found for that ID", 404))
       }
+
+      //Recalcular el averageRatings después de borrar un review
+      if(Model.modelName === "Review") {
+        Model.calcAverageRatings(doc.tour._id)
+      }
   
       res.status(204).json({
         status: "success",
@@ -64,14 +69,20 @@ exports.deleteOne = (Model) => {
 exports.updateOne = (Model) => {
   return async (req, res, next) => {
     try {
+      
       const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true
       });
-  
+
       if(!doc) {
         return next(new ErrorHandler("No document found for that ID", 404))
       }
+
+      //Recalcular el averageRatings después de editar el rating de un review
+      if(Model.modelName === "Review") {
+        Model.calcAverageRatings(doc.tour._id)
+      }  
   
       res.status(200).json({
         status: "success",
