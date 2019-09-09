@@ -143,3 +143,47 @@ exports.getToursWithin = async (req, res, next) => {
     })
   }
 }
+
+//Calcular las distancias de los tours que se encuentren dentro de la distancia especificada
+exports.getDistances = async (req, res, next) => {
+  try {
+    const {latlon, unit} = req.params;
+    const [lat, lon] = latlon.split(",");
+  
+    if (!lat || !lon) {
+      next(new ErrorHandler("Please provide latitude and longitude in the format lat,lon", 400));
+    }
+
+    const distances = await Tour.aggregate([
+      {
+        $geoNear: {
+          near: {
+            type: "Point",
+            coordinates: [lon * 1, lat * 1],
+          },
+          distanceField: "distance",
+          distanceMultiplier: 0.001
+        }
+      },
+      {
+        $project: {
+          distance: 1,
+          name: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        data: distances
+      }
+    });
+
+  } catch(error) {
+    res.status(400).json({
+      status: "fail",
+      message: error
+    })
+  }
+}

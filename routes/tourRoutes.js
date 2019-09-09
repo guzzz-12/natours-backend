@@ -1,5 +1,5 @@
 const express = require("express");
-const {getTours, getSingleTour, createTour, editTour, deleteTour, getTourStats, getMonthlyPlan, getToursWithin} = require("../controllers/tourController");
+const {getTours, getSingleTour, createTour, editTour, deleteTour, getTourStats, getMonthlyPlan, getToursWithin, getDistances} = require("../controllers/tourController");
 const {protectRoutes, restrictTo} = require("../controllers/authController");
 const reviewRouter = require("../routes/reviewRoutes");
 
@@ -13,7 +13,11 @@ router.route("/monthly-plan/:year")
 
 //Obtener los tours cuya ubicación (startLocation) se encuentre dentro de la distancia determinada en los parámetros de la URL
 router.route("/tours-within/:distance/center/:latlon/unit/:unit")
-.get(getToursWithin)
+.get(getToursWithin);
+
+//Calcular las distancias de los tours que se encuentren dentro de la distancia especificada
+router.route("/distances/:latlon/unit/:unit")
+.get(getDistances);
 
 router.route("/")
 .get(getTours)

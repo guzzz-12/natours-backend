@@ -160,13 +160,13 @@ toursSchema.pre(/^find/, function(next) {
 })
 
 
-//Aggregation Middleware
-toursSchema.pre("aggregate", function(next) {
-  //Agregar otro stage al inicio del aggregation pipeline
-  this.pipeline().unshift({$match: {secretTour: {$ne: true}}})
-  console.log(this.pipeline())
-  next()
-})
+// //Aggregation Middleware
+// toursSchema.pre("aggregate", function(next) {
+//   //Agregar otro stage al inicio del aggregation pipeline
+//   this.pipeline().unshift({$match: {secretTour: {$ne: true}}})
+//   console.log(this.pipeline())
+//   next()
+// })
 
 const Tour = mongoose.model("Tour", toursSchema);
 
