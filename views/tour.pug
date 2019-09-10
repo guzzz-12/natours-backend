@@ -15,9 +15,8 @@ mixin renderReviews(review, rating, author)
       h6.reviews__user #{author.name}
     p.reviews__text #{review}
     div.reviews__rating
-      - const ratingsArr = Array(rating)
-      each rating in ratingsArr
-        svg.reviews__star.reviews__star--active
+      each star in [1,2,3,4,5]
+        svg.reviews__star(class=`reviews__star--${rating >= star ? "active" : "inactive"}`)
           use(xlink:href='/img/icons.svg#icon-star')
 
 //-Renderizar toda la información del tour
@@ -64,7 +63,7 @@ block content
             svg.overview-box__icon
               use(xlink:href='/img/icons.svg#icon-star')
             span.overview-box__label Rating
-            span.overview-box__text #{tour.ratingsAverage} / 5
+            span.overview-box__text #{tour.ratingsAverage.toFixed(1)} / 5
 
         div.overview-box__group
           h2.heading-secondary.ma-bt-lg Your tour guides
@@ -73,7 +72,9 @@ block content
 
     div.description-box
       h2.heading-secondary.ma-bt-lg About #{tour.name} tour
-      p.description__text #{tour.description}
+      - const descriptionsArray = tour.description.split("\n")
+      each paragraph in descriptionsArray
+        p.description__text #{paragraph}
 
   section.section-pictures
     each image in tour.images
@@ -92,9 +93,9 @@ block content
     div.cta
       div.cta__img.cta__img--logo
         img(src='/img/logo-white.png', alt='Natours logo')
-      img.cta__img.cta__img--1(src='/img/tour-5-2.jpg', alt='')
-      img.cta__img.cta__img--2(src='/img/tour-5-1.jpg', alt='')
+      img.cta__img.cta__img--1(src=`/img/tours/${tour.images[0]}`, alt=`${tour.name} picture 1`)
+      img.cta__img.cta__img--2(src=`/img/tours/${tour.images[1]}`, alt=`${tour.name} picture 2`)
       div.cta__content
         h2.heading-secondary What are you waiting for?
-        p.cta__text 10 days. 1 adventure. Infinite memories. Make it yours today!
+        p.cta__text #{tour.duration} days. 1 adventure. Infinite memories. Make it yours today!
         button.btn.btn--green.span-all-rows Book tour now!
