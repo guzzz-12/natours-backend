@@ -21,8 +21,22 @@ exports.getOverview = async (req, res) => {
 }
 
 //Mostrar los detalles de cada tour
-exports.getTour = (req, res) => {
-  res.status(200).render("tour", {
-    title: "The Forest Hiker Tour"
-  })
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findOne({slug: req.params.tourSlug}).populate({
+      path: "reviews",
+      fields: "review rating author"
+    });
+    
+    res.status(200).render("tour", {
+      title: tour.name,
+      tour: tour
+    });
+
+  } catch(error) {
+    res.status(404).json({
+      status: "fail",
+      message: error
+    })
+  }
 }
