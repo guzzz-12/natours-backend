@@ -3,20 +3,29 @@ const morgan = require("morgan");
 const tourRouter = require("./routes/tourRoutes");
 const userRouter = require("./routes/userRoutes");
 const reviewRouter = require("./routes/reviewRoutes");
+const viewRouter = require("./routes/viewRoutes");
 const ErrorHandler = require("./utils/errorHandler");
 const errorController = require("./controllers/errorController");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
+const path = require("path");
 
 //Inicializar la API
 const app = express();
+
+//Establecer el view engine y las rutas a los views
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
 
 // ------- Middlewares globales -------- //
 
 //Middleware para crear headers HTTP seguros
 app.use(helmet());
+
+//Middleware para leer archivos estáticos
+app.use(express.static(path.join(__dirname, "public")));
 
 //Middleware para loguear en consola en ambiente de desarrollo
 if(process.env.NODE_ENV === "development") {
@@ -40,10 +49,8 @@ app.use(mongoSanitize());
 //Limpieza de data contra ataques XSS
 app.use(xss());
 
-//Middleware para leer archivos estáticos
-app.use(express.static(`${__dirname}/public`));
-
 //Middleware de las Rutas
+app.use("/", viewRouter);
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
