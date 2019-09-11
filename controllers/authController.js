@@ -121,6 +121,17 @@ exports.login = async (req, res, next) => {
   }
 }
 
+//Cerrar sesión de usuario
+exports.logout = (req, res, next) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({
+    status: "success"
+  })
+}
+
 //Permitir el acceso a un recurso sólo cuando el usuario está autenticado
 exports.protectRoutes = async (req, res, next) => {
   try {
@@ -190,17 +201,10 @@ exports.isLoggedIn = async (req, res, next) => {
       res.locals.user = currentUser
       return next()      
     }
-    next()
+    return next()
 
   } catch(error) {
-    let err = {...error}
-    if (process.env.NODE_ENV === "production") {
-      err = tokenError(error.name)
-    }
-    res.status(401).json({
-      status: "fail",
-      message: err
-    })
+    return next()
   }
 }
 
