@@ -40,3 +40,18 @@ exports.getTour = async (req, res) => {
     })
   }
 }
+
+//Mostrar formulario de login
+exports.login = async (req, res) => {
+  try {
+    res.status(200).render("login", {
+      title: "Login"
+    });
+
+  } catch(error) {
+    res.status(400).json({
+      status: "fail",
+      message: error
+    })
+  }
+}
