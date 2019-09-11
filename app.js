@@ -11,6 +11,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 //Inicializar la API
 const app = express();
@@ -42,6 +43,7 @@ app.use("/api", limiter);
 
 //Middlewarepara parsear la data del body
 app.use(express.json());
+app.use(cookieParser());
 
 //Limpieza de data contra ataques NoSQL Query Injection
 app.use(mongoSanitize());
