@@ -22,3 +22,18 @@ export const login = (email, password) => {
     showAlert("error", err.response.data.message);
   })
 }
+
+export const logout = () => {
+  axios({
+    method: "GET",
+    url: "http://localhost:3000/api/v1/users/logout"
+  })
+  .then((res) => {
+    if (res.data.status === "success") {
+      location.reload(true);
+    }
+  })
+  .catch(err => {
+    showAlert("error", "Error logging out. Try again.")
+  })
+}
