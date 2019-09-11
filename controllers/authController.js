@@ -128,6 +128,8 @@ exports.protectRoutes = async (req, res, next) => {
     //Chequear si existe el token
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
       token = req.headers.authorization.split(" ")[1];
+    } else if (req.cookies.jwt) {
+      token = req.cookies.jwt;
     }
     
     if (!token) {
@@ -151,6 +153,43 @@ exports.protectRoutes = async (req, res, next) => {
     req.user = currentUser;
     
     //Si el usuario cumple con todos los pasos de verificación, concederle acceso al recurso solicitado
+    next()
+
+  } catch(error) {
+    let err = {...error}
+    if (process.env.NODE_ENV === "production") {
+      err = tokenError(error.name)
+    }
+    res.status(401).json({
+      status: "fail",
+      message: err
+    })
+  }
+}
+
+//Chequear si el usuario está logueado para renderizar condicionalmente elementos en las páginas
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    if (req.cookies.jwt) {
+      //Chequear si el token es válido
+      const decodedToken = await jwt.verify(req.cookies.jwt, jwtSecret);
+      
+      //Chequear si el usuario existe
+      const currentUser = await User.findById(decodedToken.id);
+      if (!currentUser) {
+        return next()
+      }
+  
+      //Chequear si el usuario cambió la contraseña después de crear el token
+      if (currentUser.changedPassword(decodedToken.iat)) {
+        return next()
+      }    
+  
+      //Variable locals con el usuario logueado
+      //Las variables locals son accesibles por los templates
+      res.locals.user = currentUser
+      return next()      
+    }
     next()
 
   } catch(error) {
