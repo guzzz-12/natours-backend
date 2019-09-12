@@ -1,7 +1,34 @@
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const factory = require("./handlerFactory");
+const multer = require("multer");
 
+
+//Configuración de multer para actualizar imágenes de avatar
+const multerStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "public/img/users")
+  },
+  filename: (req, file, callback) => {
+    const extension = file.mimetype.split("/")[1];
+    callback(null, `user-${req.user.id}-${Date.now()}.${extension}`)
+  }
+});
+
+const multerFilter = (req, file, callback) => {
+  if (file.mimetype.startsWith("image")) {
+    callback(null, true)
+  } else {
+    callback(new ErrorHandler("Please upload only image files", 400), false)
+  }
+}
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+exports.uploadUserPhoto = upload.single("photo");
 
 //Mostrar errores de validación
 const validationErrors = (err) => {
@@ -14,11 +41,11 @@ const validationErrors = (err) => {
 }
 
 
-
 //Actualizar la información del usuario
 exports.updateMe = async (req, res, next) => {
   try {
-    
+    console.log(req.file)
+    console.log(req.body)
     //Campos permitidos
     const allowedData = ["name", "email"];
     
