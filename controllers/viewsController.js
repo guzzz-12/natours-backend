@@ -1,4 +1,5 @@
 const Tour = require("../models/tourModel");
+const ErrorHandler = require("../utils/errorHandler");
 
 //Mostrar todos los tours en el homepage
 exports.getOverview = async (req, res) => {
@@ -21,12 +22,16 @@ exports.getOverview = async (req, res) => {
 }
 
 //Mostrar los detalles de cada tour
-exports.getTour = async (req, res) => {
+exports.getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findOne({slug: req.params.tourSlug}).populate({
       path: "reviews",
       fields: "review rating author"
     });
+
+    if (!tour) {
+      return next(new ErrorHandler("There's no tour with that name", 404))
+    }
     
     res.status(200).render("tour", {
       title: tour.name,
