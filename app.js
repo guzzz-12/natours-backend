@@ -43,6 +43,7 @@ app.use("/api", limiter);
 
 //Middlewarepara parsear la data del body
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
 //Limpieza de data contra ataques NoSQL Query Injection
