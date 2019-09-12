@@ -44,13 +44,12 @@ const validationErrors = (err) => {
 //Actualizar la información del usuario
 exports.updateMe = async (req, res, next) => {
   try {
-    console.log(req.file)
-    console.log(req.body)
     //Campos permitidos
     const allowedData = ["name", "email"];
     
-    //Retornar errorsi el usuario intenta actualizar un campo no permitido
+    //Retornar error si el usuario intenta actualizar un campo no permitido
     let requestKeys = Object.keys(req.body);
+    
     requestKeys.forEach(key => {
       if (!allowedData.includes(key)) {
         return next(new ErrorHandler("This route is only for Name and Email updates", 400))
@@ -61,6 +60,11 @@ exports.updateMe = async (req, res, next) => {
     let dataToUpdate = {}
     for(let key of requestKeys) {
       dataToUpdate[key] = req.body[key]
+    }
+
+    //Agregar la imagen actualizada en caso de que el usuario actualice su avatar
+    if (req.file) {
+      dataToUpdate["photo"] = req.file.filename
     }
     
     // Actualizar los datos del usuario
