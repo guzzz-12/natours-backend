@@ -1,5 +1,5 @@
 const express = require("express");
-const {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, uploadUserPhoto} = require("../controllers/userController");
+const {getAllUsers, createUser, getUser, updateUser, deleteUser, updateMe, deleteMe, uploadUserPhoto, resizeUserAvatar} = require("../controllers/userController");
 const {signup, login, logout, forgotPassword, resetPassword, protectRoutes, restrictTo, updatePassword} = require("../controllers/authController");
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.patch("/resetPassword/:token", resetPassword);
 
 //Rutas que requieren autenticación de usuario para acceder
 router.get("/me", protectRoutes, getUser);
-router.patch("/updateMe", protectRoutes, uploadUserPhoto, updateMe);
+router.patch("/updateMe", protectRoutes, uploadUserPhoto, resizeUserAvatar, updateMe);
 router.delete("/deleteMe", protectRoutes, deleteMe);
 router.patch("/updatePassword", protectRoutes, updatePassword);
 

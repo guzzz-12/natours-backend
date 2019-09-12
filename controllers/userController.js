@@ -2,18 +2,12 @@ const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const factory = require("./handlerFactory");
 const multer = require("multer");
+const sharp = require("sharp");
 
 
-//Configuración de multer para actualizar imágenes de avatar
-const multerStorage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "public/img/users")
-  },
-  filename: (req, file, callback) => {
-    const extension = file.mimetype.split("/")[1];
-    callback(null, `user-${req.user.id}-${Date.now()}.${extension}`)
-  }
-});
+//Configuración de multer para crear las imágenes de avatar
+    //La imagen se almacena temporalmente en la memoria hasta que se guarda luego de procesarla con Sharp
+const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, callback) => {
   if (file.mimetype.startsWith("image")) {
@@ -29,6 +23,23 @@ const upload = multer({
 });
 
 exports.uploadUserPhoto = upload.single("photo");
+
+//Redimensionar el tamaño de las imágenes de avatar y guardarlas
+exports.resizeUserAvatar = (req, res, next) => {
+  if (!req.file) {
+    return next()
+  }
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
+
+  sharp(req.file.buffer)
+  .resize(500, 500)
+  .toFormat("jpeg")
+  .jpeg({quality: 90})
+  .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+}
 
 //Mostrar errores de validación
 const validationErrors = (err) => {
