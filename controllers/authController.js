@@ -39,7 +39,7 @@ const tokenError = (errName) => {
 //Crear y enviar cookie con el token al cliente
 const createTokenCookie = (res, token) => {
   res.cookie("jwt", token, {
-    secure: process.env.NODE_ENV === "production" ? true : false,
+    // secure: process.env.NODE_ENV === "production" ? true : false,
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
     httpOnly: true
   });
@@ -144,7 +144,7 @@ exports.protectRoutes = async (req, res, next) => {
     }
     
     if (!token) {
-      return next(new ErrorHandler("You need to be logged in to access", 401));
+      return next(new ErrorHandler("You need to be logged in to access this page", 401));
     }
 
     //Chequear si el token es válido
@@ -161,7 +161,11 @@ exports.protectRoutes = async (req, res, next) => {
       return next(new ErrorHandler("User changed password, please login again", 401))
     }    
 
+    //Enviar el usuario actual al resto de los routes que requieren autenticación
     req.user = currentUser;
+
+    //Enviar el usuario actual a las variables locales para acceder a éste en los templates
+    res.locals.user = currentUser;
     
     //Si el usuario cumple con todos los pasos de verificación, concederle acceso al recurso solicitado
     next()

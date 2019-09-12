@@ -24,7 +24,7 @@ const errorProd = (error, req, res) => {
       });
     }
     
-    return res.status(500).json({
+    return res.status(500).render("error", {
       status: "error",
       message: "Something went wrong"
     })
@@ -32,7 +32,7 @@ const errorProd = (error, req, res) => {
   
   return res.status(error.statusCode).render("error", {
     title: "Something went wrong",
-    message: "Please, try again later"
+    message: error.message
   })
 }
 
