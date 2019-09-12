@@ -58,7 +58,7 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
 app.all("*", (req, res, next) => {
-  next(new ErrorHandler(`Can't find ${req.originalUrl} on this server`, 404));
+  next(new ErrorHandler("Page not found! Sorry, but that page doesn't seem to exist.", 404));
 })
 
 app.use(errorController);
