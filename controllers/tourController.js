@@ -48,7 +48,10 @@ exports.getTourStats = async (req, res) => {
       }
     });
   } catch (error) {
-      res.status(404).json({
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler(error.message, 400))
+    }
+    res.status(400).json({
       status: "fail",
       message: error
     })
@@ -101,8 +104,12 @@ exports.getMonthlyPlan = async (req, res) => {
         plan: plan
       }
     })
+
   } catch (error) {
-      res.status(404).json({
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler(error.message, 400))
+    }
+    res.status(400).json({
       status: "fail",
       message: error
     })
@@ -137,6 +144,9 @@ exports.getToursWithin = async (req, res, next) => {
     });
 
   } catch(error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler(error.message, 400))
+    }
     res.status(400).json({
       status: "fail",
       message: error
@@ -181,6 +191,9 @@ exports.getDistances = async (req, res, next) => {
     });
 
   } catch(error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler(error.message, 400))
+    }
     res.status(400).json({
       status: "fail",
       message: error

@@ -1,28 +1,6 @@
 const ErrorHandler = require("../utils/errorHandler");
 const APIFeatures = require("../utils/apiFeatures");
-
-//Función para mostrar errores de validación
-const validationErrors = (err) => {
-  const errorProperties = Object.values(err.errors)
-  let allErrors = errorProperties.map((error) => {
-    return `${error.message}.`
-  })
-  const message = `Invalid data: ${allErrors.join(" ")}`
-  return new ErrorHandler(message, 400).message
-}
-
-//Función para mostrar errores de data duplicada
-const duplicateDataErrors = (err) => {
-  const value = err.errmsg.split(":")
-  const message = `Duplicate field: ${value[value.length - 1].replace(" \"", "").replace("\" }", "")}. Please try another name.`;
-  return new ErrorHandler(message, 400).message
-}
-
-//Función para mostrar errores de ID no válida
-const castErrors = (err) => {
-  const newMessage = `Invalid ${err.path}: ${err.value}`
-  return new ErrorHandler(newMessage, 404).message
-}
+const {validationErrors, duplicateDataErrors, castErrors} = require("../utils/dataErrorsHandler");
 
 
 //------Operaciones CRUD------//

@@ -3,16 +3,7 @@ const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
 const emailSender = require("../utils/emailSender");
 const crypto = require("crypto");
-
-//Función para mostrar errores de validación
-const validationErrors = (err) => {
-  const errorProperties = Object.values(err.errors)
-  let allErrors = errorProperties.map((error) => {
-    return `${error.message}.`
-  })
-  const message = `Invalid data: ${allErrors.join(" ")}`
-  return new ErrorHandler(message, 400).message
-}
+const {validationErrors, duplicateDataErrors} = require("../utils/dataErrorsHandler");
 
 //Crear el token de autenticación de usuarios
 const jwtSecret = process.env.JWT_SECRET;
@@ -74,17 +65,21 @@ exports.signup = async (req, res) => {
     })
     
   } catch(error) {
-    let err = {...error}
-    if (process.env.NODE_ENV === "production") {
-      if (err.name === "ValidationError") {
-        err = validationErrors(error)
+      let err = {...error}
+      if (process.env.NODE_ENV === "production") {
+        if (err.name === "ValidationError") {
+          err = validationErrors(error)
+        }
+        
+        if(err.code === 11000) {
+          err = duplicateDataErrors(error)
+        }
       }
+      res.status(400).json({
+        status: "fail",
+        message: err
+      })
     }
-    res.status(400).json({
-      status: "fail",
-      message: err
-    })
-  }
 }
 
 //Login de usuarios
@@ -114,11 +109,17 @@ exports.login = async (req, res, next) => {
       token: token
     })
   } catch(error) {
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
-  }
+      let err = {...error}
+      if (process.env.NODE_ENV === "production") {
+        if (err.name === "ValidationError") {
+          err = validationErrors(error)
+        }
+      }
+      res.status(400).json({
+        status: "fail",
+        message: err
+      })
+    }
 }
 
 //Cerrar sesión de usuario

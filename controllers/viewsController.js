@@ -39,6 +39,9 @@ exports.getTour = async (req, res, next) => {
     });
 
   } catch(error) {
+    if(process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Tour not found", 404))
+    }
     res.status(404).json({
       status: "fail",
       message: error
