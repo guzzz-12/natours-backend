@@ -7,6 +7,7 @@ const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
 const logOutBtn = document.querySelector(".nav__el--logout");
 const userDataForm = document.querySelector(".form-user-data");
+const userPasswordForm = document.querySelector(".form-user-password");
 
 //Mostrar el mapa
 if (mapContainer) {
@@ -35,6 +36,22 @@ if (userDataForm) {
     e.preventDefault();
     const name = document.querySelector("#name").value;
     const email = document.querySelector("#email").value;
-    updateData(name, email);
+    updateData({name, email}, "data");
+  })
+}
+
+//Actualizar la contraseña del usuario
+if (userPasswordForm) {
+  userPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const currentPassword = document.querySelector("#password-current").value;
+    const newPassword = document.querySelector("#password").value;
+    const passwordConfirm = document.querySelector("#password-confirm").value;
+    await updateData({currentPassword, newPassword, passwordConfirm}, "password");
+
+    //Limpiar los campos del formulario luego de procesarlos
+    document.querySelector("#password-current").value = "";
+    document.querySelector("#password").value = "";
+    document.querySelector("#password-confirm").value = "";
   })
 }
