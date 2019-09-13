@@ -65,21 +65,20 @@ exports.signup = async (req, res) => {
     })
     
   } catch(error) {
-      let err = {...error}
-      if (process.env.NODE_ENV === "production") {
-        if (err.name === "ValidationError") {
-          err = validationErrors(error)
-        }
-        
-        if(err.code === 11000) {
-          err = duplicateDataErrors(error)
-        }
+    let err = Object.create(error);
+
+    if (process.env.NODE_ENV === "production") {
+      if (err.name === "ValidationError") {
+        err = validationErrors(error)
       }
-      res.status(400).json({
-        status: "fail",
-        message: err
-      })
+      
+      if(err.code === 11000) {
+        err = duplicateDataErrors(error)
+      }
     }
+
+    return next(new ErrorHandler(error, 400));
+  }
 }
 
 //Login de usuarios
@@ -109,17 +108,16 @@ exports.login = async (req, res, next) => {
       token: token
     })
   } catch(error) {
-      let err = {...error}
-      if (process.env.NODE_ENV === "production") {
-        if (err.name === "ValidationError") {
-          err = validationErrors(error)
-        }
+    let err = Object.create(error);
+
+    if (process.env.NODE_ENV === "production") {
+      if (err.name === "ValidationError") {
+        err = validationErrors(error)
       }
-      res.status(400).json({
-        status: "fail",
-        message: err
-      })
     }
+
+    return next(new ErrorHandler(err, 400));
+  }
 }
 
 //Cerrar sesión de usuario
@@ -172,14 +170,13 @@ exports.protectRoutes = async (req, res, next) => {
     next()
 
   } catch(error) {
-    let err = {...error}
+    let err = Object.create(error);
+    
     if (process.env.NODE_ENV === "production") {
       err = tokenError(error.name)
     }
-    res.status(401).json({
-      status: "fail",
-      message: err
-    })
+
+    return next(new ErrorHandler(err, 401));
   }
 }
 
@@ -257,10 +254,11 @@ exports.forgotPassword = async (req, res, next) => {
     user.passwordResetExpires = null;
     await user.save({validateBeforeSave: false});
 
-    res.status(400).json({
-      status: "fail",
-      message: new ErrorHandler("There was an error sending the email", 500).message
-    })
+    if(process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("There was an problem sending the email", 400));
+    }
+    
+    return next(new ErrorHandler(error, 400));
   }
 }
 
@@ -296,14 +294,13 @@ exports.resetPassword = async (req, res, next) => {
     })
 
   } catch(error) {
-    let err = {...error}
+    let err = Object.create(error);
+
     if (process.env.NODE_ENV === "production") {
       err = validationErrors(error)
     }
-    res.status(400).json({
-      status: "fail",
-      message: err
-    })
+
+    return next(new ErrorHandler(err, 400));
   }
 }
 
@@ -334,13 +331,12 @@ exports.updatePassword = async (req, res, next) => {
     })
 
   } catch(error) {
-    let err = {...error}
+    let err = Object.create(error);
+
     if (process.env.NODE_ENV === "production") {
       err = validationErrors(error)
     }
-    res.status(400).json({
-      status: "fail",
-      message: err
-    })
+
+    return next(new ErrorHandler(err, 400));
   }
 }

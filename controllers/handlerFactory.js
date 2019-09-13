@@ -27,7 +27,7 @@ exports.deleteOne = (Model) => {
         }
       })
     } catch (error) {
-      let err = {...error}
+      let err = Object.create(error)
       
       if (process.env.NODE_ENV === "production") {
         if(error.name === "CastError") {
@@ -35,10 +35,7 @@ exports.deleteOne = (Model) => {
         }
       }
   
-      res.status(404).json({
-        status: "fail",
-        message: err
-      })
+      return next(new ErrorHandler(err, 404));
     }
   }
 }
@@ -69,7 +66,8 @@ exports.updateOne = (Model) => {
         }
       })
     } catch (error) {
-      let err = {...error}
+      let err = Object.create(error);
+
       if (process.env.NODE_ENV === "production") {
         if (err.name === "ValidationError") {
           err = validationErrors(error)
@@ -83,10 +81,8 @@ exports.updateOne = (Model) => {
           err = castErrors(error)
         }
       }
-      res.status(404).json({
-        status: "fail",
-        message: err
-      })
+      
+      return next(new ErrorHandler(err, 404));
     }
   }
 }
@@ -115,7 +111,8 @@ exports.createOne = (Model) => {
       })
 
     } catch (error) {
-      let err = {...error}
+      let err = Object.create(error);
+
       if (process.env.NODE_ENV === "production") {
         if (err.code === 11000) {
           err = duplicateDataErrors(error)
@@ -124,10 +121,8 @@ exports.createOne = (Model) => {
           err = validationErrors(error)
         }
       }
-      res.status(400).json({
-        status: "fail",
-        message: err
-      })
+
+      return next(new ErrorHandler(err, 400));
     }
   }
 }
@@ -156,16 +151,15 @@ exports.getOne = (Model, populateOptions) => {
         }
       });
     } catch (error) {
-      let err = {...error}
+      let err = Object.create(error);
+
       if (process.env.NODE_ENV === "production") {
         if(error.name === "CastError") {
           err = castErrors(error)
         }
       }
-      res.status(404).json({
-        status: "fail",
-        message: err
-      })
+
+      return next(new ErrorHandler(err, 404));
     }
   }
 }
@@ -198,10 +192,7 @@ exports.getAll = (Model) => {
       })
 
     } catch (error) {
-      res.status(404).json({
-        status: "fail",
-        message: error
-      })
+      return next(new ErrorHandler(error, 404));
     }
   }
 }

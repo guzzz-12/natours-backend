@@ -2,7 +2,7 @@ const Tour = require("../models/tourModel");
 const ErrorHandler = require("../utils/errorHandler");
 
 //Mostrar todos los tours en el homepage
-exports.getOverview = async (req, res) => {
+exports.getOverview = async (req, res, next) => {
   try {
     //Tomar toda la data de los tours desde la API
     const tours = await Tour.find();
@@ -14,10 +14,10 @@ exports.getOverview = async (req, res) => {
     })
 
   } catch(error) {
-    res.status(404).json({
-      status: "fail",
-      message: error
-    })
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Sorry! There was a problem getting the tours. Try again later", 404))
+    }
+    return next(new ErrorHandler(error, 404));
   }
 }
 
@@ -42,25 +42,23 @@ exports.getTour = async (req, res, next) => {
     if(process.env.NODE_ENV === "production") {
       return next(new ErrorHandler("Tour not found", 404))
     }
-    res.status(404).json({
-      status: "fail",
-      message: error
-    })
+
+    return next(new ErrorHandler(error, 404));
   }
 }
 
 //Mostrar formulario de login
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   try {
-    res.status(200).render("login", {
+    res.status(200).render("loginn", {
       title: "Login"
     });
 
   } catch(error) {
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Sorry! There was a problem, try again later.", 500))
+    }
+    return next(new ErrorHandler(error, 500));
   }
 }
 

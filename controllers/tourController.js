@@ -20,7 +20,7 @@ exports.editTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 
 //Calcular y agrupar las estadísticas de los tours
-exports.getTourStats = async (req, res) => {
+exports.getTourStats = async (req, res, next) => {
   try {
     const stats = await Tour.aggregate([
       {
@@ -49,17 +49,15 @@ exports.getTourStats = async (req, res) => {
     });
   } catch (error) {
     if (process.env.NODE_ENV === "production") {
-      return next(new ErrorHandler(error.message, 400))
+      return next(new ErrorHandler("Sorry! There was a problem getting the tour stats. Try again later", 400))
     }
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+
+    return next(new ErrorHandler(error, 400));
   }
 };
 
 //Obtener el número de tours por mes de inicio
-exports.getMonthlyPlan = async (req, res) => {
+exports.getMonthlyPlan = async (req, res, next) => {
   try {
     const year = req.params.year * 1;
 
@@ -107,12 +105,10 @@ exports.getMonthlyPlan = async (req, res) => {
 
   } catch (error) {
     if (process.env.NODE_ENV === "production") {
-      return next(new ErrorHandler(error.message, 400))
+      return next(new ErrorHandler("Sorry! There was a problem getting the monthly plan. Try again later", 400))
     }
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+    
+    return next(new ErrorHandler(error, 400));
   }
 }
 
@@ -145,12 +141,9 @@ exports.getToursWithin = async (req, res, next) => {
 
   } catch(error) {
     if (process.env.NODE_ENV === "production") {
-      return next(new ErrorHandler(error.message, 400))
+      return next(new ErrorHandler("Sorry! There was a problem getting the tours. Try again later", 400))
     }
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+    return next(new ErrorHandler(error, 400));
   }
 }
 
@@ -192,11 +185,9 @@ exports.getDistances = async (req, res, next) => {
 
   } catch(error) {
     if (process.env.NODE_ENV === "production") {
-      return next(new ErrorHandler(error.message, 400))
+      return next(new ErrorHandler("Sorry! There was a problem calculating the distances. Try again later", 400))
     }
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+
+    return next(new ErrorHandler(error, 400));
   }
 }
