@@ -50,7 +50,7 @@ exports.getTour = async (req, res, next) => {
 //Mostrar formulario de login
 exports.login = async (req, res, next) => {
   try {
-    res.status(200).render("loginn", {
+    res.status(200).render("login", {
       title: "Login"
     });
 

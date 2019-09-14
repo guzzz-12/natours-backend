@@ -37,7 +37,7 @@ const createTokenCookie = (res, token) => {
 }
 
 //Crear un nuevo usuario
-exports.signup = async (req, res) => {
+exports.signup = async (req, res, next) => {
   try {
     const newUser = await User.create({
       name: req.body.name,
@@ -77,7 +77,7 @@ exports.signup = async (req, res) => {
       }
     }
 
-    return next(new ErrorHandler(error, 400));
+    return next(new ErrorHandler(err, 400));
   }
 }
 
