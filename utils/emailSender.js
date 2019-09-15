@@ -52,4 +52,8 @@ module.exports = class EmailSender {
   async sendWelcome() {
     this.send("welcome", "Welcome to Natours Website")
   }
+
+  async sendResetPassword() {
+    this.send("passwordReset", "Reset your password.")
+  }
 }
