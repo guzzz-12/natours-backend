@@ -1,7 +1,7 @@
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const jwt = require("jsonwebtoken");
-const emailSender = require("../utils/emailSender");
+const EmailSender = require("../utils/emailSender");
 const crypto = require("crypto");
 const {validationErrors, duplicateDataErrors} = require("../utils/dataErrorsHandler");
 
@@ -46,8 +46,12 @@ exports.signup = async (req, res, next) => {
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       passwordChangedAt: Date.now()
-    })
+    });
 
+    const url = `${req.protocol}://${req.get("host")}/me`;
+    
+    await new EmailSender(newUser, url).sendWelcome();
+    
     const token = signToken(newUser._id);
     
     //Enviar el cookie
@@ -238,11 +242,11 @@ exports.forgotPassword = async (req, res, next) => {
 
     const message = `Forgot your password? Submit a PATCH request with your password and password confirmation to ${resetUrl}`
 
-    await emailSender({
-      email: user.email,
-      subject: "Your password reset token is valid for 10 minutes",
-      message
-    });
+    // await EmailSender({
+    //   email: user.email,
+    //   subject: "Your password reset token is valid for 10 minutes",
+    //   message
+    // });
 
     res.status(200).json({
       status: "success",
