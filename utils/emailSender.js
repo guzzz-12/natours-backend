@@ -1,33 +1,55 @@
 const nodemailer = require("nodemailer");
+const pug = require("pug");
+const htmlToText = require("html-to-text");
 
-const emailSender = async (options) => {
-  //Crear un transporter
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASSWORD
-    }
-  });
-
-  //Definir las opciones del email
-  const mailOptions = {
-    from: "Natours Website",
-    to: options.email,
-    subject: options.subject,
-    text: options.message
+module.exports = class EmailSender {
+  constructor(user, url) {
+    this.to = user.email,
+    this.firstName = user.name.split(" ")[0],
+    this.url = url,
+    this.from = `Natours Admin ${process.env.EMAIL_FROM}`
   }
 
-  //Enviar el email
-  transporter.sendMail(mailOptions)
-  .then(info => {
-    console.log(info)
-  })
-  .catch(err => {
-    console.log(err)
-  })
-}
+  //Crear el transporter
+  createNewTransport() {
+    return nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASSWORD
+      }
+    });
+  }
 
-module.exports = emailSender;
+  //Enviar el email al usuario
+  send(template, subject) {
+    //Renderizar el HTML del email desde un template pug
+    const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
+      firstName: this.firstName,
+      url: this.url,
+      subject: subject
+    });
+
+    //Definir las opciones del email
+    const mailOptions = {
+      from: this.from,
+      to: this.to,
+      subject: subject,
+      html: html,
+      text: htmlToText.fromString(html)
+    }
+
+    //Crear el transport y enviar el email
+    this.createNewTransport().sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log("Error sending", error);
+      }
+    })
+  }
+
+  async sendWelcome() {
+    this.send("welcome", "Welcome to Natours Website")
+  }
+}
