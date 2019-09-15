@@ -1,5 +1,5 @@
 const express = require("express");
-const {getTours, getSingleTour, createTour, editTour, deleteTour, getTourStats, getMonthlyPlan, getToursWithin, getDistances} = require("../controllers/tourController");
+const {getTours, getSingleTour, createTour, editTour, deleteTour, getTourStats, getMonthlyPlan, getToursWithin, getDistances, uploadTourImages, resizeTourImages} = require("../controllers/tourController");
 const {protectRoutes, restrictTo} = require("../controllers/authController");
 const reviewRouter = require("../routes/reviewRoutes");
 
@@ -25,7 +25,7 @@ router.route("/")
 
 router.route("/:id")
 .get(getSingleTour)
-.patch(protectRoutes, restrictTo("admin", "lead-guide"), editTour)
+.patch(protectRoutes, restrictTo("admin", "lead-guide"), uploadTourImages, resizeTourImages, editTour)
 .delete(protectRoutes, restrictTo("admin", "lead-guide"), deleteTour);
 
 module.exports = router;

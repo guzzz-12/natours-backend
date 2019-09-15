@@ -25,20 +25,28 @@ const upload = multer({
 exports.uploadUserPhoto = upload.single("photo");
 
 //Redimensionar el tamaño de las imágenes de avatar y guardarlas
-exports.resizeUserAvatar = (req, res, next) => {
-  if (!req.file) {
-    return next()
+exports.resizeUserAvatar = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return next()
+    }
+  
+    req.file.filename = `user-${req.user.id}.jpeg`
+  
+    await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({quality: 90})
+    .toFile(`public/img/users/${req.file.filename}`);
+  
+    next();
+
+  } catch(error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("There was a problem uploading the images, try again.", 400))
+    }
+    return next(new ErrorHandler(error, 400))
   }
-
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`
-
-  sharp(req.file.buffer)
-  .resize(500, 500)
-  .toFormat("jpeg")
-  .jpeg({quality: 90})
-  .toFile(`public/img/users/${req.file.filename}`);
-
-  next();
 }
 
 //Mostrar errores de validación
@@ -80,6 +88,10 @@ exports.updateMe = async (req, res, next) => {
     
     // Actualizar los datos del usuario
     const user = await User.findByIdAndUpdate(req.user.id, dataToUpdate, {new: true, runValidators: true});
+
+    if (!user) {
+      return next(new ErrorHandler("User not found.", 404))
+    }
     
     res.status(200).json({
       status: "success",
@@ -94,27 +106,25 @@ exports.updateMe = async (req, res, next) => {
     if (process.env.NODE_ENV === "production" && err.name === "ValidationError") {
       err = validationErrors(error)
     }
-    res.status(400).json({
-      status: "fail",
-      message: err
-    })
+    return next(new ErrorHandler(err, 400))
   }
-  
 }
 
 //Desactivar la cuenta del usuario
 exports.deleteMe = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.user.id, {active: false});
+    const user = await User.findByIdAndUpdate(req.user.id, {active: false});
+
+    if (!user) {
+      return next(new ErrorHandler("User not found.", 404))
+    }
+
     res.status(204).json({
       status: success,
       data: null
     })
   } catch(error) {
-    res.status(400).json({
-      status: "fail",
-      message: error
-    })
+    return next(new ErrorHandler(err, 400))
   }
 }
 

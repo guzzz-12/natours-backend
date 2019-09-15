@@ -1,6 +1,83 @@
 const Tour = require("../models/tourModel");
 const ErrorHandler = require("../utils/errorHandler");
 const factory = require("./handlerFactory");
+const multer = require("multer");
+const sharp = require("sharp");
+
+//Procesar las imágenes del tour
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, callback) => {
+  if (file.mimetype.startsWith("image")) {
+    callback(null, true)
+  } else {
+    callback(new ErrorHandler("Please upload only image files", 400), false)
+  }
+}
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter
+});
+
+//Actualizar las imágenes de los tours
+exports.uploadTourImages = upload.fields([
+  {
+    name: "imageCover",
+    maxCount: 1
+  },
+  {
+    name: "images",
+    maxCount: 3
+  }
+]);
+
+//Escalar las imágenes del tuor
+exports.resizeTourImages = async (req, res, next) => {
+  try {
+    if (!req.files.imageCover || !req.files.images) {
+      return next()
+    }
+
+    //Actualizar el imageCover del tour
+    const imageCoverName = `tour-${req.params.id}-cover.jpeg`
+
+    await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({quality: 90})
+    .toFile(`public/img/tours/${imageCoverName}`);
+
+    req.body.imageCover = imageCoverName;
+
+    //Actualizar las imágenes del tour
+    const tourImages = [];
+
+    const imagesPromises = req.files.images.map(async (image, i) => {
+      const filename = `tour-${req.params.id}-${i + 1}.jpeg`;
+
+      await sharp(image.buffer)
+      .resize(2000, 1333)
+      .toFormat("jpeg")
+      .jpeg({quality: 90})
+      .toFile(`public/img/tours/${filename}`);
+
+      tourImages.push(filename)
+    });
+
+    await Promise.all(imagesPromises);
+
+    req.body.images = tourImages;
+
+    next();
+
+  } catch(error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("There was a problem uploading the images, try again.", 400))
+    }
+    return next(new ErrorHandler(error, 400))
+  }
+}
 
 
 //------ Operaciones CRUD ------//

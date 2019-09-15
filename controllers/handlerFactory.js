@@ -89,7 +89,7 @@ exports.updateOne = (Model) => {
 
 //Crear un documento
 exports.createOne = (Model) => {
-  return async (req, res) => {
+  return async (req, res, next) => {
     //Si se va a crear un review tomando la ID desde los parámetros dela URL, hacer:
     if (Model.modelName === "Review") {
       if (!req.body.tour) {
