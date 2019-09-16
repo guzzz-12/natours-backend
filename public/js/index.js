@@ -2,12 +2,14 @@ import "@babel/polyfill";
 import {login, logout} from "./login";
 import {renderMap} from "./mapbox";
 import {updateData} from "./updateSettings";
+import {bookTour} from "./stripe";
 
 const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
 const logOutBtn = document.querySelector(".nav__el--logout");
 const userDataForm = document.querySelector(".form-user-data");
 const userPasswordForm = document.querySelector(".form-user-password");
+const bookBtn = document.getElementById("book-tour");
 
 //Mostrar el mapa
 if (mapContainer) {
@@ -57,5 +59,13 @@ if (userPasswordForm) {
     document.querySelector("#password-current").value = "";
     document.querySelector("#password").value = "";
     document.querySelector("#password-confirm").value = "";
+  })
+}
+
+if(bookBtn) {
+  bookBtn.addEventListener("click", (e) => {
+    e.target.textContent = "Processing...";
+    const tourId = e.target.dataset.tourId;
+    bookTour(tourId);
   })
 }
