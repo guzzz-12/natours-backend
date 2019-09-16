@@ -62,6 +62,7 @@ if (userPasswordForm) {
   })
 }
 
+//Procesar el pago mediante stripe si el usuario está logueado
 if(bookBtn) {
   bookBtn.addEventListener("click", (e) => {
     e.target.textContent = "Processing...";
