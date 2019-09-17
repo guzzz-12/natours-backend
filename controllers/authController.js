@@ -28,12 +28,14 @@ const tokenError = (errName) => {
 }
 
 //Crear y enviar cookie con el token al cliente
-const createTokenCookie = (res, token) => {
-  res.cookie("jwt", token, {
-    // secure: process.env.NODE_ENV === "production" ? true : false,
+const createTokenCookie = (req, res, token) => {
+  const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    httpOnly: true
-  });
+    httpOnly: true,
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https"
+  }
+
+  res.cookie("jwt", token, cookieOptions);
 }
 
 //Crear un nuevo usuario
@@ -55,7 +57,7 @@ exports.signup = async (req, res, next) => {
     const token = signToken(newUser._id);
     
     //Enviar el cookie
-    createTokenCookie(res, token);
+    createTokenCookie(req, res, token);
 
     //Excluir el password de la respuesta al crear el usuario
     newUser.password = null;
@@ -105,7 +107,7 @@ exports.login = async (req, res, next) => {
     //Si todo es correcto, enviar el token al cliente
     const token = signToken(user._id);
 
-    createTokenCookie(res, token);
+    createTokenCookie(req, res, token);
 
     res.status(200).json({
       status: "success",
@@ -283,7 +285,7 @@ exports.resetPassword = async (req, res, next) => {
     //Loguear el usuario y enviar el token al cliente
     const token = signToken(user._id);
 
-    createTokenCookie(res, token);
+    createTokenCookie(req, res, token);
 
     res.status(200).json({
       status: "success",
@@ -320,7 +322,7 @@ exports.updatePassword = async (req, res, next) => {
     //Loguear el usuario, enviar el token
     const token = signToken(user._id);
 
-    createTokenCookie(res, token);
+    createTokenCookie(req, res, token);
 
     res.status(200).json({
       status: "success",

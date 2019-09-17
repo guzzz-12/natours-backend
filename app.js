@@ -18,6 +18,8 @@ const compression = require("compression");
 //Inicializar la API
 const app = express();
 
+app.enable("trust proxy");
+
 //Establecer el view engine y las rutas a los views
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
