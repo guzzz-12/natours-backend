@@ -14,6 +14,7 @@ const xss = require("xss-clean");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
+const cors = require("cors");
 
 //Inicializar la API
 const app = express();
@@ -25,6 +26,11 @@ app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
 // ------- Middlewares globales -------- //
+
+//Implementación de CORS
+app.use(cors());
+//Implementar CORS en todos los tipos de request, además de get y post
+app.options("*", cors());
 
 //Middleware para crear headers HTTP seguros
 app.use(helmet());
