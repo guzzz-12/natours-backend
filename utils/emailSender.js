@@ -12,25 +12,23 @@ module.exports = class EmailSender {
 
   //Crear el transporter
   createNewTransport() {
-    if (process.env.NODE_ENV === "production") {
-      return nodemailer.createTransport({
-        service: "SendGrid",
-        auth: {
-          user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD
-        }
-      })
-    }
-
     return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
+      service: "SendGrid",
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_PASSWORD
+        user: process.env.SENDGRID_USERNAME,
+        pass: process.env.SENDGRID_PASSWORD
       }
     });
+
+    // return nodemailer.createTransport({
+    //   host: 'smtp.gmail.com',
+    //   port: 465,
+    //   secure: true,
+    //   auth: {
+    //     user: process.env.GMAIL_USER,
+    //     pass: process.env.GMAIL_PASSWORD
+    //   }
+    // });
   }
 
   //Enviar el email al usuario
@@ -56,6 +54,7 @@ module.exports = class EmailSender {
       if (error) {
         console.log("Error sending", error);
       }
+      console.log("Email sent.")
     })
   }
 

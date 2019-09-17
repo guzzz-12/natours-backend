@@ -6,7 +6,6 @@ export const bookTour = async (tourId) => {
   try {
     //Obtener la sesión de stripe generada en el backend
     const session = await axios(`http://localhost:3000/api/v1/bookings/checkout-session/${tourId}`);
-    console.log(session)
   
     // Crear el formulario de pago
     await stripe.redirectToCheckout({
