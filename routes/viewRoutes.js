@@ -1,14 +1,16 @@
 const express = require("express");
-const {getOverview, getTour, login, getAccount} = require("../controllers/viewsController");
-const authController = require("../controllers/authController");
+const {getOverview, getTour, login, getAccount, getMyTours} = require("../controllers/viewsController");
+const {isLoggedIn, protectRoutes} = require("../controllers/authController");
 const {createBookingCheckout} = require("../controllers/bookingController");
 
 const router = express.Router();
 
 //Rutas a los views
-router.get("/", createBookingCheckout, authController.isLoggedIn, getOverview);
-router.get("/tours/:tourSlug", authController.isLoggedIn, getTour);
-router.get("/login", authController.isLoggedIn, login);
-router.get("/me", authController.protectRoutes, getAccount)
+router.get("/", createBookingCheckout, isLoggedIn, getOverview);
+router.get("/tours/:tourSlug", isLoggedIn, getTour);
+router.get("/my-tours", protectRoutes, getMyTours);
+
+router.get("/login", isLoggedIn, login);
+router.get("/me", protectRoutes, getAccount)
 
 module.exports = router;

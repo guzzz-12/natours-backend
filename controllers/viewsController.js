@@ -1,4 +1,6 @@
 const Tour = require("../models/tourModel");
+const User = require("../models/userModel");
+const Booking = require("../models/bookingModel");
 const ErrorHandler = require("../utils/errorHandler");
 
 //Mostrar todos los tours en el homepage
@@ -67,4 +69,24 @@ exports.getAccount = (req, res) => {
   res.status(200).render("account", {
     title: "Your account"
   });
+}
+
+//Mostrar la página de los bookings del usuario
+exports.getMyTours = async (req, res, next) => {
+  try {
+    //Encontrar los bookings del usuario
+    const bookings = await Booking.find({user: req.user.id});
+  
+    //Encontrar los tours e los bookings
+    const tourIds = bookings.map(el => el.tour);
+    const tours = await Tour.find({_id: {$in: tourIds}});
+  
+    res.status(200).render("overview", {
+      title: "My Tours",
+      tours: tours
+    });
+
+  } catch(error) {
+    return next(new ErrorHandler(error, 400))
+  }
 }
