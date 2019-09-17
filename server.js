@@ -38,4 +38,12 @@ process.on("unhandledRejection", (err) => {
   server.close(() => {
     process.exit(1)
   })
+});
+
+//Cerrar la aplicación de manera que se procesen los requests pendientes cuando Heroku reinicia el dyno (Evento SIGTERM)
+process.on("SIGTERM", () => {
+  console.log("Sigterm received: Shutting down the application");
+  server.close(() => {
+    console.log("Process terminated")
+  })
 })
