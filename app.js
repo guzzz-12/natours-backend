@@ -13,6 +13,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const path = require("path");
 const cookieParser = require("cookie-parser");
+const compression = require("compression");
 
 //Inicializar la API
 const app = express();
@@ -52,6 +53,9 @@ app.use(mongoSanitize());
 
 //Limpieza de data contra ataques XSS
 app.use(xss());
+
+//Comprimir la data enviada al usuario
+app.use(compression());
 
 //Middleware de las Rutas
 app.use("/", viewRouter);
