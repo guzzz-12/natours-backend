@@ -466,5 +466,50 @@
         "day": 5
       }
     ]
+  },
+  {
+    "startLocation": {
+      "description": "Juangriego, Venezuela",
+      "type": "Point",
+      "coordinates": [-63.9733703, 11.080461],
+      "address": "Brion Blvd, Juangriego, Nva. Esparta, Vzla"
+    },
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 5,
+    "images": ["tour-10-1.jpg", "tour-10-2.jpg", "tour-10-3.jpg"],
+    "startDates": [
+      "2020-07-19T09:00:00.000Z",
+      "2020-08-20T09:00:00.000Z",
+      "2020-09-18T09:00:00.000Z"
+    ],
+    "name": "The Sunset Magic",
+    "duration": 3,
+    "maxGroupSize": 12,
+    "difficulty": "easy",
+    "guides": ["5c8a22c62f8fb814b56fa18b", "5c8a1f4e2f8fb814b56fa185"],
+    "price": 470,
+    "summary": "Enjoy a whole week admiring the magical sunsets on The Pearl of the Caribbean.",
+    "description": "Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\nIrure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    "imageCover": "tour-10-cover.jpg",
+    "locations": [
+      {
+        "description": "Fortín de La Galera",
+        "type": "Point",
+        "coordinates": [-63.9755, 11.0870625],
+        "day": 1
+      },
+      {
+        "description": "Mirador Puerto Constanza",
+        "type": "Point",
+        "coordinates": [-63.9026298, 11.1495746],
+        "day": 2
+      },
+      {
+        "description": "La Punta de La Punta",
+        "type": "Point",
+        "coordinates": [-64.3740119, 10.9818366],
+        "day": 3
+      }
+    ]
   }
 ]
