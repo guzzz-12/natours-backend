@@ -1,11 +1,13 @@
 import "@babel/polyfill";
 import {login, logout} from "./login";
+import {signup} from "./signup";
 import {renderMap} from "./mapbox";
 import {updateData} from "./updateSettings";
 import {bookTour} from "./stripe";
 
 const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
+const signupForm = document.querySelector("#form--signup");
 const logOutBtn = document.querySelector(".nav__el--logout");
 const userDataForm = document.querySelector(".form-user-data");
 const userPasswordForm = document.querySelector(".form-user-password");
@@ -30,6 +32,18 @@ if (loginForm) {
 //Hacer logout
 if (logOutBtn) {
   logOutBtn.addEventListener("click", logout)
+}
+
+//Hacer signup
+if (signupForm) {
+  signupForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const username = document.querySelector("#username").value;
+    const email = document.querySelector("#email").value;
+    const password = document.querySelector("#password").value;
+    const passwordConfirm = document.querySelector("#passwordConfirm").value;
+    signup(username, email, password, passwordConfirm);
+  });
 }
 
 //Actualizar los datos del usuario

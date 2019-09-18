@@ -1,5 +1,5 @@
 const express = require("express");
-const {getOverview, getTour, login, getAccount, getMyTours} = require("../controllers/viewsController");
+const {getOverview, getTour, login, signup, getAccount, getMyTours} = require("../controllers/viewsController");
 const {isLoggedIn, protectRoutes} = require("../controllers/authController");
 const {createBookingCheckout} = require("../controllers/bookingController");
 
@@ -11,6 +11,7 @@ router.get("/tours/:tourSlug", isLoggedIn, getTour);
 router.get("/my-tours", protectRoutes, getMyTours);
 
 router.get("/login", isLoggedIn, login);
-router.get("/me", protectRoutes, getAccount)
+router.get("/signup", signup);
+router.get("/me", protectRoutes, getAccount);
 
 module.exports = router;
