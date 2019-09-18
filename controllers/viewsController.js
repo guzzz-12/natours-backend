@@ -6,12 +6,13 @@ const ErrorHandler = require("../utils/errorHandler");
 //Mostrar todos los tours en el homepage
 exports.getOverview = async (req, res, next) => {
   try {
-    //Tomar toda la data de los tours desde la API
-    const tours = await Tour.find();
+    //Tomar toda la data de los tours desde la API y ordenarlos desde el más reciente
+    const tours = await Tour.find().sort({_id: -1});
   
     //Renderizar el template usando la data de los tours
     res.status(200).render("overview", {
       title: "All tours",
+      subtitle: null,
       tours: tours
     })
 
@@ -98,6 +99,7 @@ exports.getMyTours = async (req, res, next) => {
   
     res.status(200).render("overview", {
       title: "My Tours",
+      subtitle: "My booked tours",
       tours: tours
     });
 

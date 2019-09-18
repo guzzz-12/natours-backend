@@ -55,7 +55,7 @@ exports.createBookingCheckout = async (req, res, next) => {
     await Booking.create({tour, user, price});
 
     // res.redirect(`${req.protocol}://${req.get("host")}/`);
-    res.redirect(req.originalUrl.split("?")[0]);
+    res.redirect(`${req.protocol}://${req.get("host")}/my-tours`);
 
   } catch(error) {
     return next(new ErrorHandler(error, 400))
