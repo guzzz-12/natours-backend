@@ -140,7 +140,7 @@ exports.createUser = (req, res) => {
 exports.getAllUsers = factory.getAll(User);
 
 //Leer la información de un usuario
-exports.getUser = factory.getOne(User);
+exports.getUser = factory.getOne(User, "bookings");
 
 //Actualizar usuario
 exports.updateUser = factory.updateOne(User);

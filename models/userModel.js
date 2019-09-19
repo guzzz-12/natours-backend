@@ -57,6 +57,16 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false
   }
+}, {
+  toJSON: {virtuals: true},
+  toObject: {virtuals: true},
+});
+
+//Crear propiedad virtual para almacenar los bookings del usuario
+userSchema.virtual("bookings", {
+  ref: "Booking",
+  foreignField: "user",
+  localField: "_id"
 });
 
 //Encriptar la contraseña del user
