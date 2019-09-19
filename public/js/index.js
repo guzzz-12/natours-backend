@@ -81,6 +81,7 @@ if(bookBtn) {
   bookBtn.addEventListener("click", (e) => {
     e.target.textContent = "Processing...";
     const tourId = e.target.dataset.tourId;
-    bookTour(tourId);
+    const userId = e.target.dataset.userId;
+    bookTour(tourId, userId, e);
   })
 }

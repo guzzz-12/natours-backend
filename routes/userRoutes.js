@@ -23,7 +23,7 @@ router.route("/")
 .post(protectRoutes, restrictTo("admin"), createUser);
 
 router.route("/:id")
-.get(protectRoutes, restrictTo("admin"), getUser)
+.get(protectRoutes, getUser)
 .patch(protectRoutes, restrictTo("admin"), updateUser)
 .delete(protectRoutes, restrictTo("admin"), deleteUser);
 
