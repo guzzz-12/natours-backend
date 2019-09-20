@@ -4,6 +4,7 @@ import {signup} from "./signup";
 import {renderMap} from "./mapbox";
 import {updateData} from "./updateSettings";
 import {bookTour} from "./stripe";
+import {addReview} from "./createReview";
 
 const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
@@ -12,6 +13,7 @@ const logOutBtn = document.querySelector(".nav__el--logout");
 const userDataForm = document.querySelector(".form-user-data");
 const userPasswordForm = document.querySelector(".form-user-password");
 const bookBtn = document.getElementById("book-tour");
+const reviewForm = document.getElementById("form--review");
 
 //Mostrar el mapa
 if (mapContainer) {
@@ -83,5 +85,19 @@ if(bookBtn) {
     const tourId = e.target.dataset.tourId;
     const userId = e.target.dataset.userId;
     bookTour(tourId, userId, e);
+  })
+}
+
+//Agregar review
+if(reviewForm) {
+  reviewForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const reviewText = document.querySelector("#review").value;
+    const reviewRating = reviewForm.elements["rating"].value;
+    
+    const userId = e.target.dataset.reviewUser;
+    const tourId = e.target.dataset.reviewTour;
+    
+    addReview(userId, tourId, reviewText, reviewRating)
   })
 }
