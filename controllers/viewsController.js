@@ -80,6 +80,22 @@ exports.signup = async (req, res, next) => {
   }
 }
 
+//Mostrar formulario de creación de reviews
+exports.addReview = async (req, res, next) => {
+  try {
+    res.status(200).render("createReview", {
+      title: "Add review",
+      tour: req.params.tourId
+    })
+
+  } catch(error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Sorry! There was a problem, try again later.", 500))
+    }
+    return next(new ErrorHandler(error, 500));
+  }
+}
+
 //Renderizar la página del usuario logueado
 exports.getAccount = (req, res) => {
   res.status(200).render("account", {
