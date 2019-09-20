@@ -597,7 +597,7 @@ body {
 
 .section-reviews {
   margin-top: calc(0px - var(--section-rotate));
-  padding: calc(5rem + var(--section-rotate)) 0;
+  padding: calc(3rem + var(--section-rotate)) 0;
   position: relative;
   z-index: 1000;
   background: -webkit-gradient(
@@ -1244,7 +1244,7 @@ body {
   margin: 0 auto;
 }
 
-.login-form, .signup-form {
+.login-form, .signup-form, .review-form {
   margin: 0 auto;
   max-width: 55rem;
   background-color: #fff;
@@ -1344,4 +1344,15 @@ body {
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
   -webkit-transform: translateY(-2px);
   transform: translateY(-2px);
+}
+
+/* Formulario de review */
+.ratings-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.ratings-container div:not(:last-of-type) {
+  margin-right: 1.5rem;
 }

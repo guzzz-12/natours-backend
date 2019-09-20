@@ -89,9 +89,13 @@ block content
     #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
   section.section-reviews
+    h2.heading-secondary(style="width: 100%; text-align: center; color: #fff") Reviews
     div.reviews    
       each review in tour.reviews
         +renderReviews(review.review, review.rating, review.author)
+    if user
+      div(style="margin-top: 3rem; text-align: center")
+        a.btn.btn--green.span-all-rows(href=`/tours/${tour.id}/add-review`) Add review
 
   section.section-cta
     div.cta

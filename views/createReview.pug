@@ -1,0 +1,29 @@
+extends base
+block content
+  main.main
+    .review-form
+      h2.heading-secondary.ma-bt-lg Add review
+      form.form#form--review( data-review-tour=`${tour}` data-review-user=`${user.id}`)
+        .form__group
+          label.form__label(for="review") Write your review
+          textarea#review.form__input(name="review", cols="30", rows="10", required)
+        .form__group.ma-bt-md
+          label.form__label Rating
+          .ratings-container
+            div
+              input(type="radio" name="rating" id="rating-1" value="1" checked)
+              label.form__label(for="rating-1") 1
+            div
+              input(type="radio" name="rating" id="rating-2" value="2")
+              label.form__label(for="rating-2") 2
+            div
+              input(type="radio" name="rating" id="rating-3" value="3")
+              label.form__label(for="rating-3") 3
+            div
+              input(type="radio" name="rating" id="rating-4" value="4")
+              label.form__label(for="rating-4") 4
+            div
+              input(type="radio" name="rating" id="rating-5" value="5")
+              label.form__label(for="rating-5") 5
+        .form__group
+        button.btn.btn--green.span-all-rows#add-review(style="display: inherit; margin: 3rem auto 0 auto") Add review
