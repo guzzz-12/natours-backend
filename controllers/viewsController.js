@@ -29,7 +29,8 @@ exports.getTour = async (req, res, next) => {
   try {
     const tour = await Tour.findOne({slug: req.params.tourSlug}).populate({
       path: "reviews",
-      fields: "review rating author"
+      fields: "review rating author",
+      options: { sort: {createdAt: -1}}
     });
 
     if (!tour) {
