@@ -32192,9 +32192,11 @@ function () {
   };
 }();
 
-cancelBtn.addEventListener("click", function () {
-  disableConfirmModal.classList.add("disable-account-modal-container--hidden");
-});
+if (cancelBtn) {
+  cancelBtn.addEventListener("click", function () {
+    disableConfirmModal.classList.add("disable-account-modal-container--hidden");
+  });
+}
 
 var disableAccount =
 /*#__PURE__*/

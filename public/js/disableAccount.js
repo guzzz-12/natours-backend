@@ -23,9 +23,11 @@ const confirmDisable = async () => {
   }, 3500)
 }
 
-cancelBtn.addEventListener("click", () => {
-  disableConfirmModal.classList.add("disable-account-modal-container--hidden");
-})
+if(cancelBtn) {
+  cancelBtn.addEventListener("click", () => {
+    disableConfirmModal.classList.add("disable-account-modal-container--hidden");
+  })
+}
 
 export const disableAccount = async (providedPassword, password) => {
   try {
