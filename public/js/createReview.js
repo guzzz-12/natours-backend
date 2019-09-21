@@ -11,7 +11,7 @@ export const addReview = async (userId, tourId, review, rating) => {
     });
     //Chequear si el usuario ya agregó un review al tour
     if (reviewsUsersIds.includes(userId)) {
-      showAlert("error", "You can't add multiple reviews. Redirecting...");
+      showAlert("error", "You can't add multiple reviews to the same tour.");
       setTimeout(() => {
         window.history.back();
       }, 3500)
