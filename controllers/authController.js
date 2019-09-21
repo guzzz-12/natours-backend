@@ -103,7 +103,7 @@ exports.login = async (req, res, next) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new ErrorHandler("Incorrect email or password", 401));
     }    
-  
+
     //Si todo es correcto, enviar el token al cliente
     const token = signToken(user._id);
 
@@ -156,7 +156,7 @@ exports.protectRoutes = async (req, res, next) => {
     const decodedToken = await jwt.verify(token, jwtSecret);
     
     //Chequear si el usuario existe
-    const currentUser = await User.findById(decodedToken.id);
+    const currentUser = await User.findById(decodedToken.id).select("+password");
     if (!currentUser) {
       return next(new ErrorHandler("This user no longer exist in the database", 401))
     }

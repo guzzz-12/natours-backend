@@ -120,11 +120,11 @@ exports.deleteMe = async (req, res, next) => {
     }
 
     res.status(204).json({
-      status: success,
+      status: "success",
       data: null
     })
   } catch(error) {
-    return next(new ErrorHandler(err, 400))
+    return next(new ErrorHandler(error, 400))
   }
 }
 

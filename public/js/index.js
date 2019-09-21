@@ -5,6 +5,7 @@ import {renderMap} from "./mapbox";
 import {updateData} from "./updateSettings";
 import {bookTour} from "./stripe";
 import {addReview} from "./createReview";
+import {disableAccount} from "./disableAccount";
 
 const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
@@ -14,6 +15,7 @@ const userDataForm = document.querySelector(".form-user-data");
 const userPasswordForm = document.querySelector(".form-user-password");
 const bookBtn = document.getElementById("book-tour");
 const reviewForm = document.getElementById("form--review");
+const disableAccountForm = document.querySelector(".form-user-disable");
 
 //Mostrar el mapa
 if (mapContainer) {
@@ -99,5 +101,15 @@ if(reviewForm) {
     const tourId = e.target.dataset.reviewTour;
     
     addReview(userId, tourId, reviewText, reviewRating)
+  })
+}
+
+//Desactivar cuenta de usuario
+if (disableAccountForm) {
+  disableAccountForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+    const providedPassword = disableAccountForm.elements["password-disable"].value;
+    const password = e.target.dataset.userPassword;
+    disableAccount(providedPassword, password);
   })
 }
