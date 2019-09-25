@@ -8622,12 +8622,15 @@ function () {
           case 3:
             checkReview = _context.sent;
             reviews = checkReview.data.data.data;
-            reviewsUsersIds = reviews.map(function (review) {
-              return review.author.id;
+            reviewsUsersIds = [];
+            reviews.forEach(function (review) {
+              if (review.author) {
+                reviewsUsersIds.push(review.author.id);
+              }
             }); //Chequear si el usuario ya agregó un review al tour
 
             if (!reviewsUsersIds.includes(userId)) {
-              _context.next = 10;
+              _context.next = 11;
               break;
             }
 
@@ -8637,8 +8640,8 @@ function () {
             }, 3500);
             return _context.abrupt("return");
 
-          case 10:
-            _context.next = 12;
+          case 11:
+            _context.next = 13;
             return (0, _axios.default)({
               method: "POST",
               url: "/api/v1/reviews",
@@ -8650,27 +8653,27 @@ function () {
               }
             });
 
-          case 12:
+          case 13:
             //Notificar al usuario que el review fue creado y redirigir a la página del tour
             (0, _alerts.showAlert)("success", "Review added successfully! Redirecting...");
             setTimeout(function () {
               location.href = document.referrer;
             }, 3500);
-            _context.next = 20;
+            _context.next = 21;
             break;
 
-          case 16:
-            _context.prev = 16;
+          case 17:
+            _context.prev = 17;
             _context.t0 = _context["catch"](0);
             (0, _alerts.showAlert)("error", _context.t0.message);
             return _context.abrupt("return");
 
-          case 20:
+          case 21:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 16]]);
+    }, _callee, null, [[0, 17]]);
   }));
 
   return function addReview(_x, _x2, _x3, _x4) {
@@ -32683,7 +32686,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "1665" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "9068" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

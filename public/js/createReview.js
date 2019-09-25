@@ -6,9 +6,13 @@ export const addReview = async (userId, tourId, review, rating) => {
     //Tomar los reviews del tour
     const checkReview = await axios(`/api/v1/tours/${tourId}/reviews`);
     const reviews = checkReview.data.data.data;
-    const reviewsUsersIds = reviews.map(review => {
-      return review.author.id;
+    let reviewsUsersIds = [];
+    reviews.forEach(review => {
+      if(review.author) {
+        reviewsUsersIds.push(review.author.id);
+      }
     });
+    
     //Chequear si el usuario ya agregó un review al tour
     if (reviewsUsersIds.includes(userId)) {
       showAlert("error", "You can't add multiple reviews to the same tour.");
