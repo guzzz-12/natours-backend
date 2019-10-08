@@ -113,11 +113,18 @@ exports.updateMe = async (req, res, next) => {
 //Desactivar la cuenta del usuario
 exports.deleteMe = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.user.id, {active: false});
+    const user = await User.findById(req.user.id).select("active password");
 
     if (!user) {
       return next(new ErrorHandler("User not found.", 404))
     }
+
+    if (!(await user.correctPassword(req.body.password, user.password))) {
+      return next(new ErrorHandler("Incorrect password", 401));
+    }
+
+    user.active = false;
+    await user.save();
 
     res.status(204).json({
       status: "success",

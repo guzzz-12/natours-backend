@@ -14,7 +14,7 @@ router.patch("/resetPassword/:token", resetPassword);
 //Rutas que requieren autenticación de usuario para acceder
 router.get("/me", protectRoutes, getUser);
 router.patch("/updateMe", protectRoutes, uploadUserPhoto, resizeUserAvatar, updateMe);
-router.delete("/deleteMe", protectRoutes, deleteMe);
+router.post("/deleteMe", protectRoutes, deleteMe);
 router.patch("/updatePassword", protectRoutes, updatePassword);
 
 //Rutas que requieren autenticación de adminitrador para acceder

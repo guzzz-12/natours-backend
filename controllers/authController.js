@@ -156,7 +156,7 @@ exports.protectRoutes = async (req, res, next) => {
     const decodedToken = await jwt.verify(token, jwtSecret);
     
     //Chequear si el usuario existe
-    const currentUser = await User.findById(decodedToken.id).select("+password");
+    const currentUser = await User.findById(decodedToken.id);
     if (!currentUser) {
       return next(new ErrorHandler("This user no longer exist in the database", 401))
     }

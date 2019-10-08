@@ -109,7 +109,6 @@ if (disableAccountForm) {
   disableAccountForm.addEventListener("submit", (e) => {
     e.preventDefault()
     const providedPassword = disableAccountForm.elements["password-disable"].value;
-    const password = e.target.dataset.userPassword;
-    disableAccount(providedPassword, password);
+    disableAccount(providedPassword);
   })
 }
