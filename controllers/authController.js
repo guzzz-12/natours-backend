@@ -229,6 +229,7 @@ exports.restrictTo = (...roles) => {
 //Enviar correo de confirmación de restablecimiento de contraseña en caso de que el usuario lo solicite por olvido de su contraseña actual
 exports.forgotPassword = async (req, res, next) => {
   try {
+    let resetUrl = null;
     //Tomar el usuario según su email
     const user = await User.findOne({email: req.body.email})
     if (!user) {
@@ -240,7 +241,12 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save({validateBeforeSave: false})
 
     //Enviarle el email con el token de reseteo de password
-    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
+    if(process.env.NODE_ENV === "development") {
+      resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
+    } else if(process.env.NODE_ENV === "production") {
+      resetUrl = `${req.protocol}://${req.get("host")}/users/resetPassword/${resetToken}`;
+    }
+    
     await new EmailSender(user, resetUrl).sendResetPassword();
 
     res.status(200).json({
