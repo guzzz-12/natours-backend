@@ -242,9 +242,9 @@ exports.forgotPassword = async (req, res, next) => {
 
     //Enviarle el email con el token de reseteo de password
     if(process.env.NODE_ENV === "development") {
-      resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/resetPassword/${resetToken}`;
+      resetUrl = `${req.protocol}://${req.get("host")}/api/v1/users/reset-password/${resetToken}`;
     } else if(process.env.NODE_ENV === "production") {
-      resetUrl = `${req.protocol}://${req.get("host")}/users/resetPassword/${resetToken}`;
+      resetUrl = `${req.protocol}://${req.get("host")}/reset-password/${resetToken}`;
     }
     
     await new EmailSender(user, resetUrl).sendResetPassword();
@@ -260,7 +260,7 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save({validateBeforeSave: false});
 
     if(process.env.NODE_ENV === "production") {
-      return next(new ErrorHandler("There was an problem sending the email", 400));
+      return next(new ErrorHandler("There was an problem updating your password", 400));
     }
     
     return next(new ErrorHandler(error, 400));

@@ -99,7 +99,8 @@ exports.forgotPasswordForm = async (req, res, next) => {
 exports.resetPasswordForm = async (req, res, next) => {
   try {
     res.status(200).render("resetPassword", {
-      title: "Reset your password"
+      title: "Reset your password",
+      token: req.params.token
     });
   } catch (error) {
     if (process.env.NODE_ENV === "production") {

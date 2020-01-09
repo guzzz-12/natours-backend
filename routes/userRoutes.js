@@ -8,8 +8,8 @@ const router = express.Router();
 router.post("/signup", signup);
 router.post("/login", login);
 router.get("/logout", logout);
-router.post("/forgotpassword", forgotPassword);
-router.patch("/resetPassword/:token", resetPassword);
+router.post("/forgot-password", forgotPassword);
+router.patch("/reset-password/:token", resetPassword);
 
 //Rutas que requieren autenticación de usuario para acceder
 router.get("/me", protectRoutes, getUser);
