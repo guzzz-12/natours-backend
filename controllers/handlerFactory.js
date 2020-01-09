@@ -174,12 +174,15 @@ exports.getAll = (Model) => {
         filter = {tour: req.params.tourId}
       }
 
+      // Obtener el número total de documentos en la colección
+      const documentsCount = await Model.countDocuments();
+
       //Ejecutar el query para filtrar, ordenar, limitar y paginar los documentos
       const features = new APIFeatures(Model.find(filter), req.query)
       .filter()
       .sort()
       .limitFields()
-      .paginate();
+      .paginate(documentsCount);
 
       const documents = await features.query;
   

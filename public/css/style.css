@@ -1254,6 +1254,23 @@ body {
   border-radius: 5px;
 }
 
+.reset-password-link-container {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.reset-password-link-container span {
+  margin-right: 5px;
+  font-size: inherit;
+}
+
+.reset-password-link-container a {
+  font-size: inherit;
+  font-weight: bold;
+  color: inherit;
+}
+
 .form__input {
   display: block;
   font-family: inherit;
