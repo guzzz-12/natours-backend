@@ -81,6 +81,34 @@ exports.signup = async (req, res, next) => {
   }
 }
 
+//Mostrar formulario de email de restablecimiento de contraseña
+exports.forgotPasswordForm = async (req, res, next) => {
+  try {
+    res.status(200).render("forgotPassword", {
+      title: "Forgot your password?"
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Sorry! There was a problem, try again later.", 500))
+    }
+    return next(new ErrorHandler(error, 500));
+  }
+}
+
+//Mostrar formulario de reseteo de contraseña 
+exports.resetPasswordForm = async (req, res, next) => {
+  try {
+    res.status(200).render("resetPassword", {
+      title: "Reset your password"
+    });
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      return next(new ErrorHandler("Sorry! There was a problem, try again later.", 500))
+    }
+    return next(new ErrorHandler(error, 500));
+  }
+}
+
 //Mostrar formulario de creación de reviews
 exports.addReview = async (req, res, next) => {
   try {
