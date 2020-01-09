@@ -4,7 +4,7 @@ import {showAlert} from "./alerts";
 export const sendForgotPasswordEmail = (email) => {
   axios({
     method: "POST",
-    url: "/api/v1/forgot-password",
+    url: "/api/v1/users/forgot-password",
     data: {
       email: email
     }

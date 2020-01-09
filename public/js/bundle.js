@@ -8782,7 +8782,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var sendForgotPasswordEmail = function sendForgotPasswordEmail(email) {
   (0, _axios.default)({
     method: "POST",
-    url: "/api/v1/forgot-password",
+    url: "/api/v1/users/forgot-password",
     data: {
       email: email
     }
