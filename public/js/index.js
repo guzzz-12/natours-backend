@@ -7,6 +7,7 @@ import {bookTour} from "./stripe";
 import {addReview} from "./createReview";
 import {disableAccount} from "./disableAccount";
 import {sendForgotPasswordEmail} from "./sendPasswordResetEmail";
+import {resetPassword} from "./resetPassword";
 
 const mapContainer = document.querySelector("#map");
 const loginForm = document.querySelector("#form--login");
@@ -18,6 +19,7 @@ const bookBtn = document.getElementById("book-tour");
 const reviewForm = document.getElementById("form--review");
 const disableAccountForm = document.querySelector(".form-user-disable");
 const forgotPasswordForm = document.querySelector("#form--forgot-password");
+const resetPasswordForm = document.querySelector("#form--reset-password");
 
 //Mostrar el mapa
 if (mapContainer) {
@@ -122,5 +124,16 @@ if(forgotPasswordForm) {
     const email = document.querySelector("#forgot-password-email").value;
     console.log(email)
     sendForgotPasswordEmail(email);
+  })
+}
+
+//Resetear contraseña mediante el token enviado al email
+if(resetPasswordForm) {
+  resetPasswordForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const password = document.querySelector("#password").value;
+    const passwordConfirm = document.querySelector("#passwordConfirm").value;
+    const token = e.target.dataset.resetToken;
+    resetPassword(password, passwordConfirm, token);
   })
 }
