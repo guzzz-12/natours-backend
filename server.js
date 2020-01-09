@@ -20,7 +20,8 @@ const db = process.env.DATABASE.replace("<password>", process.env.DATABASE_PASSW
 mongoose.connect(db, {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useFindAndModify: false
+  useFindAndModify: false,
+  useUnifiedTopology: true
 })
 .then((connection) => {
   console.log("Remote DB connection successful")
