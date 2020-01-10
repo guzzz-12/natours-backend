@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validator.isEmail, "Invalid email"]
   },
+  loginAttempts: Number,
+  loginDisabled: Date,
   photo: {
     type: String,
     default: "default.jpg"

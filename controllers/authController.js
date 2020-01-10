@@ -44,7 +44,6 @@ exports.signup = async (req, res, next) => {
     const newUser = await User.create({
       name: req.body.name,
       email: req.body.email,
-      role: req.body.role,
       password: req.body.password,
       passwordConfirm: req.body.passwordConfirm,
       passwordChangedAt: Date.now()
@@ -99,15 +98,33 @@ exports.login = async (req, res, next) => {
   
     //Chequear si el usuario existe y el password es correcto
     const user = await User.findOne({email: email}).select("+password");
+
+    //Chequear si el login está deshabilitado para el usuario
+    if(user && user.loginDisabled && user.loginDisabled.getTime() > Date.now()) {      
+      return next(new ErrorHandler("Too many login attempts. Try again later"));
+    }
+
+    // Sumar un intento fallido al usuario y deshabilitar login si se exceden los intentos fallidos
+    if(user && !(await user.correctPassword(password, user.password))) {
+      await User.findOneAndUpdate({email: email}, {$inc: {loginAttempts: 1}});
+
+      // Deshabilitar login por 30 minutos en caso de exceder 5 intentos fallidos
+      if(user.loginAttempts >= 5) {
+        await User.findOneAndUpdate({email: email}, {loginDisabled: Date.now() + 1800000});
+      }
+    }
     
+    //Retornar error en caso de email o contraeña incorrecta
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new ErrorHandler("Incorrect email or password", 401));
     }    
 
     //Si todo es correcto, enviar el token al cliente
     const token = signToken(user._id);
-
     createTokenCookie(req, res, token);
+
+    //Reinicializar el contador de intentos fallidos al usuario
+    await User.findOneAndUpdate({email: email},  {loginAttempts: 0});
 
     res.status(200).json({
       status: "success",
@@ -283,8 +300,11 @@ exports.resetPassword = async (req, res, next) => {
     }
     user.password = req.body.password;
     user.passwordConfirm = req.body.passwordConfirm;
+    
     user.passwordResetToken = null;
     user.passwordResetExpires = null;
+    user.loginAttempts = 0;
+    user.loginDisabled = Date.now();
 
     await user.save();    
 
